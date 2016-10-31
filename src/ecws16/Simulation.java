@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 public class Simulation {
     private ArrayList<Edge> edges;
+    private long duration;
 
-    public Simulation() {
+    public Simulation(long duration) {
+        this.duration = duration;
         edges = new ArrayList<>();
         edges.add(new Edge(0,0));
         edges.add(new Edge(0,2));
@@ -29,6 +31,8 @@ public class Simulation {
     }
 
     public void run() {
-        // TODO
+        for (long t = 0; t < duration; t++) {
+            //TODO simulate timestep
+        }
     }
 }
