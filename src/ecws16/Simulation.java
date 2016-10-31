@@ -54,5 +54,6 @@ public class Simulation {
         int x = (int)(Math.random()*MAP_WIDTH);
         int y = (int)(Math.random()*MAP_HEIGHT);
         Request request = new Request(x,y);
+        //TODO: assign request to vm
     }
 }

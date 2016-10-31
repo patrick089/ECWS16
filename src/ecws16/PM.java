@@ -26,11 +26,13 @@ resources at the highest possible workload, W i are workload rates.
 
     private ArrayList<VM> VMs;
     private long timeLeftUntilRestarted;
+    private boolean isStarted;
 
 
     public PM() {
         this.VMs = new ArrayList<>();
         timeLeftUntilRestarted = 0;
+        isStarted = true;
     }
 
     public double getWorkloadCPU() {
@@ -49,30 +51,40 @@ resources at the highest possible workload, W i are workload rates.
     }
 
     public double getEnergyUtilization() {
+        if (!isStarted) {
+            return 0;
+        }
         double energyUtilization = U_0;
         energyUtilization += U_cpu * getWorkloadCPU();
-        energyUtilization += U_mem * getWorkloadCPU();
-        energyUtilization += U_network * getWorkloadCPU();
+        energyUtilization += U_mem * getWorkloadMem();
+        energyUtilization += U_network * getWorkloadNetwork();
         return energyUtilization;
     }
 
     public void restart() {
+        isStarted = true;
         timeLeftUntilRestarted = restartDuration;
     }
 
+    public void shutdown() {
+        isStarted = false;
+    }
+
     public void timeStep() {
-        if (timeLeftUntilRestarted > 0) {
-            timeLeftUntilRestarted--;
-        } else {
-            if (Math.random() < FAILURE_PROBABILITY) {
-                restart();
-            }
-            for (int i = 0; i < VMs.size(); i++) {
-                VM vm = VMs.get(i);
-                vm.timeStep();
-                if (vm.isFinished()) {
-                    VMs.remove(i);
-                    i--;
+        if (isStarted) {
+            if (timeLeftUntilRestarted > 0) {
+                timeLeftUntilRestarted--;
+            } else {
+                if (Math.random() < FAILURE_PROBABILITY) {
+                    restart();
+                }
+                for (int i = 0; i < VMs.size(); i++) {
+                    VM vm = VMs.get(i);
+                    vm.timeStep();
+                    if (vm.isFinished()) {
+                        VMs.remove(i);
+                        i--;
+                    }
                 }
             }
         }
