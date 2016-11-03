@@ -1,12 +1,69 @@
 package ecws16;
 
 public class Request {
-    int x;
-    int y;
+
+    private Location location;
+    private int size;
+    private long timestamp;
+    private int duration;
+    private int userId;
     //TODO: add size of the request or something?
 
-    public Request(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Request(int x, int y, long timestamp) {
+        location = new Location(x,y);
+        size = 5;
+        this.timestamp = timestamp;
+        duration = 10;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "location=" + location +
+                ", size=" + size +
+                ", timestamp=" + timestamp +
+                ", duration=" + duration +
+                ", userId=" + userId +
+                '}';
     }
 }

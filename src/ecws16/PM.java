@@ -24,15 +24,25 @@ resources at the highest possible workload, W i are workload rates.
     private static final double FAILURE_PROBABILITY = 0.001;
     private static final long restartDuration = 5;
 
-    private ArrayList<VM> VMs;
+    private ArrayList<VM> vms;
     private long timeLeftUntilRestarted;
     private boolean isStarted;
+    private int size;
+    private int memory;
+    private boolean isAlive;
 
 
-    public PM() {
-        this.VMs = new ArrayList<>();
+
+    public PM(int numberOfVms) {
+        this.vms = new ArrayList<>();
         timeLeftUntilRestarted = 0;
+        size = 1000;
         isStarted = true;
+        memory = 0;
+        for (int i = 0; i < numberOfVms; i++){
+            vms.add(new VM());
+        }
+        isAlive = true;
     }
 
     public double getWorkloadCPU() {
@@ -70,7 +80,8 @@ resources at the highest possible workload, W i are workload rates.
         isStarted = false;
     }
 
-    public void timeStep() {
+    public ArrayList<Request> timeStep(long t) {
+        ArrayList<Request> removedRequests = new ArrayList<>();
         if (isStarted) {
             if (timeLeftUntilRestarted > 0) {
                 timeLeftUntilRestarted--;
@@ -78,15 +89,40 @@ resources at the highest possible workload, W i are workload rates.
                 if (Math.random() < FAILURE_PROBABILITY) {
                     restart();
                 }
-                for (int i = 0; i < VMs.size(); i++) {
-                    VM vm = VMs.get(i);
-                    vm.timeStep();
-                    if (vm.isFinished()) {
-                        VMs.remove(i);
-                        i--;
-                    }
+                for (int i = 0; i < vms.size(); i++) {
+                    VM vm = vms.get(i);
+                    removedRequests = vm.timeStep(t);
                 }
             }
         }
+        return removedRequests;
+    }
+
+    public void handleRequest(Request request){
+
+        int minWorkload =  Integer.MAX_VALUE;
+        int workload = 0;
+        VM selectedVM = null;
+        for(VM vm : vms){
+            workload = vm.getMemory();
+            if (workload < minWorkload){
+                minWorkload = workload;
+                selectedVM = vm;
+            }
+        }
+        selectedVM.handleRequest(request);
+    }
+
+    public void die(){
+        isAlive = false;
+    }
+
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
     }
 }
