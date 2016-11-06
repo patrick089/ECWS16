@@ -124,6 +124,7 @@ running, U m is energy utilization of running PM m.
                                 firstmigration = false;
                                 System.out.println("Thirdmigration: " + vm.toString());
                                 doMigrationThirdStep(vm, deadVMs.get(i));
+                                deadVMs.remove(i--);
                             }
                         }
                     }
@@ -171,6 +172,7 @@ running, U m is energy utilization of running PM m.
         deadVm.die();
         migrationMap.remove(vm);
         vm.setAlive(true);
+        vm.setInMigrationProgress(false);
 
         /*for(PM pm : pms){
             for(int i = 0; i < pm.getVms().size(); i++){
