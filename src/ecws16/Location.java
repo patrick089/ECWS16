@@ -1,8 +1,5 @@
 package ecws16;
 
-/**
- * Created by Julia on 03.11.16.
- */
 public class Location {
 
     private int x;

@@ -15,25 +15,25 @@ public class Simulation {
     public Simulation(long duration) {
         this.duration = duration;
         edges = new ArrayList<>();
-        edges.add(new Edge(0,0, 5));
-        edges.add(new Edge(0,2, 5));
-        edges.add(new Edge(0,4, 5));
-        edges.add(new Edge(0,6, 5));
-        edges.add(new Edge(1,5, 5));
-        edges.add(new Edge(1,8, 5));
-        edges.add(new Edge(2,2, 5));
-        edges.add(new Edge(2,4, 5));
-        edges.add(new Edge(2,6, 5));
-        edges.add(new Edge(3,0, 5));
-        edges.add(new Edge(4,2, 5));
-        edges.add(new Edge(4,4, 5));
-        edges.add(new Edge(4,6, 5));
-        edges.add(new Edge(4,8, 5));
-        edges.add(new Edge(6,0, 5));
-        edges.add(new Edge(6,3, 5));
-        edges.add(new Edge(7,2, 5));
-        edges.add(new Edge(7,4, 5));
-        edges.add(new Edge(7,7, 5));
+        edges.add(new Edge(0,0, 10));
+        edges.add(new Edge(0,2, 10));
+        edges.add(new Edge(0,4, 10));
+        edges.add(new Edge(0,6, 10));
+        edges.add(new Edge(1,5, 10));
+        edges.add(new Edge(1,8, 10));
+        edges.add(new Edge(2,2, 10));
+        edges.add(new Edge(2,4, 10));
+        edges.add(new Edge(2,6, 10));
+        edges.add(new Edge(3,0, 10));
+        edges.add(new Edge(4,2, 10));
+        edges.add(new Edge(4,4, 10));
+        edges.add(new Edge(4,6, 10));
+        edges.add(new Edge(4,8, 10));
+        edges.add(new Edge(6,0, 10));
+        edges.add(new Edge(6,3, 10));
+        edges.add(new Edge(7,2, 10));
+        edges.add(new Edge(7,4, 10));
+        edges.add(new Edge(7,7, 10));
         requests = new ArrayList<>();
         users = new ArrayList<>();
         userCount = 1;
@@ -43,6 +43,8 @@ public class Simulation {
         ArrayList<Request> removedRequests = new ArrayList<>();
         for (long t = 0; t < duration; t++) {
             generateRequests(t);
+            simulateMigration();
+            checkIfAllVmsAreAlive();
             for (Edge edge : edges) {
                 removedRequests = edge.timeStep(t);
                 if(removedRequests.size() > 0){
@@ -71,6 +73,22 @@ public class Simulation {
         }
     }
 
+    private void simulateMigration() {
+        if (Math.random() < 0.5) {
+            generateToMigrationVM();
+        }
+    }
+
+    private void generateToMigrationVM() {
+
+        int randomNumber1 =  (int) ((Math.random() * 19));
+        Edge edge = edges.get(randomNumber1);
+        int randomNumber2 = (int) ((Math.random() * 10));
+        PM pm = edge.getPms().get(randomNumber2);
+        VM vm = pm.getVms().get(0);
+        vm.setInMigrationProgress(true);
+    }
+
     private void generateRequest(long timeStep) {
         int x = (int)(Math.random()*MAP_WIDTH);
         int y = (int)(Math.random()*MAP_HEIGHT);
@@ -79,21 +97,27 @@ public class Simulation {
         userCount++;
         Edge nearestEdge = findNearestEdge(user.getRequest());
         nearestEdge.handleRequest(user.getRequest());
-        //TODO: assign request to vm
     }
-    //TODO: find also the Edge with the lowest Memory - Julia
     private Edge findNearestEdge(Request request) {
         int distance;
         int minDistance = Integer.MAX_VALUE;
         Edge edge = null;
         for(int i = 0; i < edges.size(); i++){
             distance = edges.get(i).getDistanceToRequest(request.getLocation());
-            if(distance < minDistance){
-                minDistance = distance;
-                edge = edges.get(i);
+            if(edges.get(i).hasFreeCapacity(request) == true) {
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    edge = edges.get(i);
+                }
             }
         }
         return edge;
+    }
+
+    private void checkIfAllVmsAreAlive(){
+        for(Edge edge : edges){
+            edge.checkIfAllVmsAreAlive();
+        }
     }
 
 }

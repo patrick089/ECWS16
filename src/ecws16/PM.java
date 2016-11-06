@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class PM {
     /*
-    Size, consumed memory, consumed CPU, consumed network bandwidth.
+    Size, consumed capacity, consumed CPU, consumed network bandwidth.
 – Energy signature:
-• linear combination of the CPU, memory and network workload, but not
+• linear combination of the CPU, capacity and network workload, but not
 equal to zero in the idle state. It depends on the consumed resources, e.g.
 the same workload of CPU and network will end up into different energy
 consumption rates on different machines.Energy utilization function of
@@ -28,37 +28,21 @@ resources at the highest possible workload, W i are workload rates.
     private long timeLeftUntilRestarted;
     private boolean isStarted;
     private int size;
-    private int memory;
     private boolean isAlive;
 
 
 
-    public PM(int numberOfVms) {
+    public PM(int numberOfVms, int size) {
         this.vms = new ArrayList<>();
         timeLeftUntilRestarted = 0;
-        size = 1000;
+        this.size = size;
         isStarted = true;
-        memory = 0;
         for (int i = 0; i < numberOfVms; i++){
-            vms.add(new VM());
+            vms.add(new VM(50));
         }
         isAlive = true;
     }
 
-    public double getWorkloadCPU() {
-        // TODO
-        return 0;
-    }
-
-    public double getWorkloadMem() {
-        // TODO
-        return 0;
-    }
-
-    public double getWorkloadNetwork() {
-        // TODO
-        return 0;
-    }
 
     public double getEnergyUtilization() {
         if (!isStarted) {
@@ -104,7 +88,7 @@ resources at the highest possible workload, W i are workload rates.
         int workload = 0;
         VM selectedVM = null;
         for(VM vm : vms){
-            workload = vm.getMemory();
+            workload = vm.getCapacity();
             if (workload < minWorkload){
                 minWorkload = workload;
                 selectedVM = vm;
@@ -117,12 +101,67 @@ resources at the highest possible workload, W i are workload rates.
         isAlive = false;
     }
 
-
-    public int getMemory() {
-        return memory;
+    public ArrayList<VM> checkIfAllVmsAreAlive(){
+        ArrayList<VM> deadVM = new ArrayList<>();
+        for(int i = 0; i < vms.size(); i++){
+            if(vms.get(i).isInMigrationProgress() == true){
+                deadVM.add(vms.get(i));
+                //setSize(size - vms.get(i).getMemory().getSize());
+                //vms.remove(i--);
+            }
+        }
+        return deadVM;
     }
 
-    public void setMemory(int memory) {
-        this.memory = memory;
+
+    public int getCapacity() {
+        int capacity = 0;
+        for(VM vm: vms){
+            capacity += vm.getCapacity();
+        }
+        return capacity;
+    }
+
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public double getWorkloadCPU() {
+        // TODO
+        return 0;
+    }
+
+    public double getWorkloadMem() {
+        // TODO
+        return 0;
+    }
+
+    public double getWorkloadNetwork() {
+        // TODO
+        return 0;
+    }
+
+    public ArrayList<VM> getVms() {
+        return vms;
+    }
+
+    public void setVms(ArrayList<VM> vms) {
+        this.vms = vms;
+    }
+
+    @Override
+    public String toString() {
+        return "PM{" +
+                "vms=" + vms +
+                ", timeLeftUntilRestarted=" + timeLeftUntilRestarted +
+                ", isStarted=" + isStarted +
+                ", size=" + size +
+                ", isAlive=" + isAlive +
+                '}';
     }
 }
