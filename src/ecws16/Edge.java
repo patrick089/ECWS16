@@ -2,6 +2,7 @@ package ecws16;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Edge {
     /*
@@ -26,19 +27,25 @@ running, U m is energy utilization of running PM m.
     private static final int MAX_PMS = 10;
     private static final double FAILURE_PROBABILITY = 0.0001;
 
+    private ID id;
     private Location location;
     private ArrayList<PM> pms;
     private HashMap<VM,PM> migrationMap;
+    private boolean isAlive;
+    private boolean inMigrationProcess;
 
 
     public Edge(int x, int y, int numberOfPMs) {
 
+        this.id = new ID();
         location = new Location(x,y);
         this.pms = new ArrayList<>();
         for (int i = 0; i < Math.min(numberOfPMs, MAX_PMS); i++) {
             this.pms.add(new PM(10,1250));
         }
         migrationMap = new HashMap<>();
+        isAlive =true;
+        inMigrationProcess = false;
     }
 
     public int distanceTo(Edge edge) {
@@ -76,14 +83,17 @@ running, U m is energy utilization of running PM m.
 
     public void handleRequest(Request request){
 
+        request.setEdgeId(this.getId().getId());
         int minWorkload =  Integer.MAX_VALUE;
         int workload = 0;
         PM selectedPM = null;
         for(PM pm : pms){
-            workload = pm.getCapacity();
-            if (workload < minWorkload){
-                minWorkload = workload;
-                selectedPM = pm;
+            if(pm.isAlive() == true) {
+                workload = pm.getCapacity();
+                if (workload < minWorkload) {
+                    minWorkload = workload;
+                    selectedPM = pm;
+                }
             }
         }
         selectedPM.handleRequest(request);
@@ -170,9 +180,15 @@ running, U m is energy utilization of running PM m.
     private void doMigrationThirdStep(VM vm, VM deadVm) {
 
         deadVm.die();
+        ArrayList<PM> samePMs = countSamePMs(deadVm);
+        if(samePMs.size() == 1){
+            samePMs.get(0).die();
+        }
         migrationMap.remove(vm);
         vm.setAlive(true);
         vm.setInMigrationProgress(false);
+
+
 
         /*for(PM pm : pms){
             for(int i = 0; i < pm.getVms().size(); i++){
@@ -186,7 +202,42 @@ running, U m is energy utilization of running PM m.
 
     }
 
+    private ArrayList<PM> countSamePMs(VM deadVm) {
+        ArrayList<PM> pms = new ArrayList<>();
+        for(Map.Entry<VM, PM> entry : migrationMap.entrySet()){
+            if(entry.getKey().getId().getId() == deadVm.getId().getId()){
+                pms.add(entry.getValue());
+            }
+        }
+        return pms;
+    }
+
+    public void die(){
+        isAlive = false;
+        inMigrationProcess = false;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+
+    public boolean isInMigrationProcess() {
+        return inMigrationProcess;
+    }
+
+    public void setInMigrationProcess(boolean inMigrationProcess) {
+        this.inMigrationProcess = inMigrationProcess;
+    }
+
     public ArrayList<PM> getPms() {
         return pms;
+    }
+
+    public ID getId() {
+        return id;
     }
 }

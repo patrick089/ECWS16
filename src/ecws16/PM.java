@@ -29,10 +29,12 @@ resources at the highest possible workload, W i are workload rates.
     private boolean isStarted;
     private int size;
     private boolean isAlive;
-
+    private boolean inMigrationProcess;
+    private ID id;
 
 
     public PM(int numberOfVms, int size) {
+        this.id = new ID();
         this.vms = new ArrayList<>();
         timeLeftUntilRestarted = 0;
         this.size = size;
@@ -41,6 +43,7 @@ resources at the highest possible workload, W i are workload rates.
             vms.add(new VM(50));
         }
         isAlive = true;
+        inMigrationProcess = false;
     }
 
 
@@ -84,6 +87,7 @@ resources at the highest possible workload, W i are workload rates.
 
     public void handleRequest(Request request){
 
+        request.setPmId(this.getId().getId());
         int minWorkload =  Integer.MAX_VALUE;
         int workload = 0;
         VM selectedVM = null;
@@ -99,6 +103,7 @@ resources at the highest possible workload, W i are workload rates.
 
     public void die(){
         isAlive = false;
+        inMigrationProcess = false;
     }
 
     public ArrayList<VM> checkIfAllVmsAreAlive(){
@@ -154,6 +159,31 @@ resources at the highest possible workload, W i are workload rates.
         this.vms = vms;
     }
 
+    public boolean isInMigrationProcess() {
+        return inMigrationProcess;
+    }
+
+    public void setInMigrationProcess(boolean inMigrationProcess) {
+        this.inMigrationProcess = inMigrationProcess;
+        if(inMigrationProcess == true){
+            for(VM vm : this.getVms()){
+                vm.setInMigrationProgress(true);
+            }
+        }
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
+
+    public ID getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return "PM{" +
@@ -162,6 +192,8 @@ resources at the highest possible workload, W i are workload rates.
                 ", isStarted=" + isStarted +
                 ", size=" + size +
                 ", isAlive=" + isAlive +
+                ", inMigrationProcess=" + inMigrationProcess +
+                ", id=" + id +
                 '}';
     }
 }

@@ -57,7 +57,7 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
     }
 
     public void handleRequest(Request request){
-
+        request.setVmId(this.getId().getId());
         requests.add(request);
         //System.out.println("Adding Request: " + request.toString());
         memory.makePageDirty(request);
@@ -86,6 +86,7 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
 
     public void die(){
         setAlive(false);
+        setInMigrationProgress(false);
     }
 
 

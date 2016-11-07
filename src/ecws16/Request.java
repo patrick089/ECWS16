@@ -7,6 +7,9 @@ public class Request {
     private long timestamp;
     private int duration;
     private int userId;
+    private int edgeId;
+    private int pmId;
+    private int vmId;
     //TODO: add size of the request or something?
 
     public Request(int x, int y, long timestamp) {
@@ -56,6 +59,30 @@ public class Request {
         this.userId = userId;
     }
 
+    public int getEdgeId() {
+        return edgeId;
+    }
+
+    public void setEdgeId(int edgeId) {
+        this.edgeId = edgeId;
+    }
+
+    public int getPmId() {
+        return pmId;
+    }
+
+    public void setPmId(int pmId) {
+        this.pmId = pmId;
+    }
+
+    public int getVmId() {
+        return vmId;
+    }
+
+    public void setVmId(int vmId) {
+        this.vmId = vmId;
+    }
+
     @Override
     public String toString() {
         return "Request{" +
@@ -64,6 +91,9 @@ public class Request {
                 ", timestamp=" + timestamp +
                 ", duration=" + duration +
                 ", userId=" + userId +
+                ", edgeId=" + edgeId +
+                ", pmId=" + pmId +
+                ", vmId=" + vmId +
                 '}';
     }
 }

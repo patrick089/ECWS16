@@ -5,7 +5,6 @@ public class Page {
 
     private int size;
     private boolean dirty;
-    private Request request;
 
     public Page(int size) {
         this.size = size;
@@ -33,13 +32,6 @@ public class Page {
         this.dirty = dirty;
     }
 
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,8 +41,7 @@ public class Page {
         Page page = (Page) o;
 
         if (size != page.size) return false;
-        if (dirty != page.dirty) return false;
-        return request != null ? request.equals(page.request) : page.request == null;
+        return dirty == page.dirty;
 
     }
 
@@ -58,7 +49,6 @@ public class Page {
     public int hashCode() {
         int result = size;
         result = 31 * result + (dirty ? 1 : 0);
-        result = 31 * result + (request != null ? request.hashCode() : 0);
         return result;
     }
 
@@ -67,7 +57,6 @@ public class Page {
         return "Page{" +
                 "size=" + size +
                 ", dirty=" + dirty +
-                ", request=" + request +
                 '}';
     }
 }

@@ -18,34 +18,18 @@ public class Simulation {
     private long currentTime;
     private int userCount;
     private Random random;
+    private int modus;
 
-    public Simulation(long duration) {
+    public Simulation(long duration, ArrayList<Edge> edges, int modus) {
         this.duration = duration;
         currentTime = 0;
         edges = new ArrayList<>();
-        edges.add(new Edge(0,0, 10));
-        edges.add(new Edge(0,2, 10));
-        edges.add(new Edge(0,4, 10));
-        edges.add(new Edge(0,6, 10));
-        edges.add(new Edge(1,5, 10));
-        edges.add(new Edge(1,8, 10));
-        edges.add(new Edge(2,2, 10));
-        edges.add(new Edge(2,4, 10));
-        edges.add(new Edge(2,6, 10));
-        edges.add(new Edge(3,0, 10));
-        edges.add(new Edge(4,2, 10));
-        edges.add(new Edge(4,4, 10));
-        edges.add(new Edge(4,6, 10));
-        edges.add(new Edge(4,8, 10));
-        edges.add(new Edge(6,0, 10));
-        edges.add(new Edge(6,3, 10));
-        edges.add(new Edge(7,2, 10));
-        edges.add(new Edge(7,4, 10));
-        edges.add(new Edge(7,7, 10));
+        edges.addAll(edges);
         requests = new ArrayList<>();
         users = new ArrayList<>();
         userCount = 1;
         random = new Random();
+        this.modus = modus;
     }
 
     public void run() {
@@ -61,8 +45,31 @@ public class Simulation {
     public void simulateTimestep() {
         currentTime++;
         generateRequests(currentTime);
-        simulateMigration();
-        checkIfAllVmsAreAlive();
+        if(modus == 1){
+            //no retry - migrate everytime
+
+        }else if(modus == 2){
+            //no retry - migrate random
+        }else if(modus == 3){
+            //no retry - migrate random + SLA
+
+        }else if(modus == 4){
+            //retry - migrate everytime
+        }else if (modus == 5){
+            //retry - migrate random
+        }else if(modus == 6){
+            //retry - migrate random + SLA
+        }
+        /*IMPORTANT IN MODUS WHERE WE RETRY
+        Request request = generateRequest(t)
+        if(request.isDelivierd() == false{
+            retry(request)
+        }
+        * */
+
+        setObjectsforMigration();
+        collectAndMigrateObjects();
+
         for (Edge edge : edges) {
             ArrayList<Request> removedRequests = edge.timeStep(currentTime);
             if(removedRequests.size() > 0){
@@ -94,18 +101,28 @@ public class Simulation {
     private void simulateMigration() {
         int n = (int) Math.round(random.nextGaussian() * MIGRATION_SIGMA + MIGRATION_MY);
         for (int i = 0; i < n; i++) {
-            generateToMigrationVM();
+            setObjectsforMigration();
         }
     }
 
-    private void generateToMigrationVM() {
+    private void setObjectsforMigration() {
 
-        int randomNumber1 =  (int) ((Math.random() * 19));
-        Edge edge = edges.get(randomNumber1);
-        int randomNumber2 = (int) ((Math.random() * 10));
-        PM pm = edge.getPms().get(randomNumber2);
-        VM vm = pm.getVms().get(0);
-        vm.setInMigrationProgress(true);
+        for(Edge edge : edges){
+            for(PM pm : edge.getPms()){
+                //SLA: ensure that there is enough time to migrate
+                if(pm.getCapacity() >  (Math.random()*pm.getSize() + 1) || pm.getCapacity() >  Math.round(pm.getSize()*0.75)){
+                    pm.setInMigrationProcess(true);
+                }
+                for(VM vm : pm.getVms()){
+                    //SLA: ensure that there is enough time to migrate
+                    if(vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||
+                            vm.getMemory().countDirtyPages() > Math.round((vm.getMemory().getPages().size()*0.75))){
+                        vm.setInMigrationProgress(true);
+                    }
+                }
+            }
+        }
+
     }
 
     private void generateRequest(long timeStep) {
@@ -133,7 +150,7 @@ public class Simulation {
         return edge;
     }
 
-    private void checkIfAllVmsAreAlive(){
+    private void collectAndMigrateObjects(){
         for(Edge edge : edges){
             edge.checkIfAllVmsAreAlive();
         }

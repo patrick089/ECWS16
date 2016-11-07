@@ -10,10 +10,12 @@ public class Main extends JPanel {
     private static final int HALF_SCALE = 20;
     private static final int FRAME_HEIGHT = 800;
     private static final int FRAME_WIDTH = 800;
+    private Controller controller;
     private Simulation simulation;
 
     public Main() {
-        simulation = new Simulation(50);
+        controller = new Controller(50,1);
+        simulation = controller.getSimulation();
     }
 
     @Override

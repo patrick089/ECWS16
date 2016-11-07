@@ -45,7 +45,6 @@ public class Memory {
         for (Page page : pages){
             if (page.isDirty() == false){
                 page.setDirty(true);
-                page.setRequest(request);
                 break;
             }
         }
