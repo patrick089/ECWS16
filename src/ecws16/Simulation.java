@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Simulation {
-    private static final int MAP_WIDTH = 7;
-    private static final int MAP_HEIGHT = 7;
+    private static final int MAP_WIDTH = 10;
+    private static final int MAP_HEIGHT = 10;
     private static final double REQUESTS_SIGMA = 2;
     private static final double REQUESTS_MY = 3;
     private static final double MIGRATION_SIGMA = 0.5;
@@ -139,4 +139,27 @@ public class Simulation {
         }
     }
 
+    public ArrayList<Edge> getEdges() {
+        return edges;
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public long getCurrentTime() {
+        return currentTime;
+    }
+
+    public static int getMapWidth() {
+        return MAP_WIDTH;
+    }
+
+    public static int getMapHeight() {
+        return MAP_HEIGHT;
+    }
 }
