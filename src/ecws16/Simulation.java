@@ -15,11 +15,13 @@ public class Simulation {
     private ArrayList<Request> requests;
     private ArrayList<User> users;
     private long duration;
+    private long currentTime;
     private int userCount;
     private Random random;
 
     public Simulation(long duration) {
         this.duration = duration;
+        currentTime = 0;
         edges = new ArrayList<>();
         edges.add(new Edge(0,0, 10));
         edges.add(new Edge(0,2, 10));
@@ -47,17 +49,22 @@ public class Simulation {
     }
 
     public void run() {
-        for (long t = 0; t < duration; t++) {
-            simulateTimestep(t);
+        for (currentTime = 0; !simulationIsOver();) {
+            simulateTimestep();
         }
     }
 
-    private void simulateTimestep(long t) {
-        generateRequests(t);
+    public boolean simulationIsOver() {
+        return currentTime >= duration;
+    }
+
+    public void simulateTimestep() {
+        currentTime++;
+        generateRequests(currentTime);
         simulateMigration();
         checkIfAllVmsAreAlive();
         for (Edge edge : edges) {
-            ArrayList<Request> removedRequests = edge.timeStep(t);
+            ArrayList<Request> removedRequests = edge.timeStep(currentTime);
             if(removedRequests.size() > 0){
                 finishRequests(removedRequests);
             }
