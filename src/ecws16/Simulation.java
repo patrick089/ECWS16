@@ -47,16 +47,19 @@ public class Simulation {
     }
 
     public void run() {
-        ArrayList<Request> removedRequests = new ArrayList<>();
         for (long t = 0; t < duration; t++) {
-            generateRequests(t);
-            simulateMigration();
-            checkIfAllVmsAreAlive();
-            for (Edge edge : edges) {
-                removedRequests = edge.timeStep(t);
-                if(removedRequests.size() > 0){
-                    finishRequests(removedRequests);
-                }
+            simulateTimestep(t);
+        }
+    }
+
+    private void simulateTimestep(long t) {
+        generateRequests(t);
+        simulateMigration();
+        checkIfAllVmsAreAlive();
+        for (Edge edge : edges) {
+            ArrayList<Request> removedRequests = edge.timeStep(t);
+            if(removedRequests.size() > 0){
+                finishRequests(removedRequests);
             }
         }
     }
