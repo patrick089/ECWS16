@@ -1,16 +1,22 @@
 package ecws16;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Simulation {
     private static final int MAP_WIDTH = 7;
     private static final int MAP_HEIGHT = 7;
+    private static final double REQUESTS_SIGMA = 2;
+    private static final double REQUESTS_MY = 3;
+    private static final double MIGRATION_SIGMA = 0.5;
+    private static final double MIGRATION_MY = 0.5;
 
     private ArrayList<Edge> edges;
     private ArrayList<Request> requests;
     private ArrayList<User> users;
     private long duration;
     private int userCount;
+    private Random random;
 
     public Simulation(long duration) {
         this.duration = duration;
@@ -37,6 +43,7 @@ public class Simulation {
         requests = new ArrayList<>();
         users = new ArrayList<>();
         userCount = 1;
+        random = new Random();
     }
 
     public void run() {
@@ -68,13 +75,15 @@ public class Simulation {
     }
 
     private void generateRequests(long timeStep) {
-        if (Math.random() < 0.5) {
+        int n = (int) Math.round(random.nextGaussian() * REQUESTS_SIGMA + REQUESTS_MY);
+        for (int i = 0; i < n; i++) {
             generateRequest(timeStep);
         }
     }
 
     private void simulateMigration() {
-        if (Math.random() < 0.5) {
+        int n = (int) Math.round(random.nextGaussian() * MIGRATION_SIGMA + MIGRATION_MY);
+        for (int i = 0; i < n; i++) {
             generateToMigrationVM();
         }
     }
