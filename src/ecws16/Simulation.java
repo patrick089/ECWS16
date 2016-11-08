@@ -45,6 +45,9 @@ public class Simulation {
     public void simulateTimestep() {
         currentTime++;
         generateRequests(currentTime);
+        RetryStrategy retry = new RetryStrategy();
+        Request request = generateRequest(currentTime);
+
         if(modus == 1){
             //no retry - migrate everytime
 
@@ -55,20 +58,36 @@ public class Simulation {
 
         }else if(modus == 4){
             //retry - migrate everytime
+
+            if (request.isDelivered() == false) {
+                while (retry.shouldRetry()) {
+                    try {
+                        setObjectsforMigration();//TODO Exception
+                        collectAndMigrateObjects();//TODO Exception
+                    } catch (Exception e) {
+                        try {
+                            retry.errorOccured();
+                        } catch (RetryException e1) {
+                            e1.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+
         }else if (modus == 5){
             //retry - migrate random
+
+
+
         }else if(modus == 6){
             //retry - migrate random + SLA
-        }
-        /*IMPORTANT IN MODUS WHERE WE RETRY
-        Request request = generateRequest(t)
-        if(request.isDelivierd() == false{
-            retry(request)
-        }
-        * */
 
-        setObjectsforMigration();
-        collectAndMigrateObjects();
+
+        }
+
+        //setObjectsforMigration();
+        //collectAndMigrateObjects();
 
         for (Edge edge : edges) {
             ArrayList<Request> removedRequests = edge.timeStep(currentTime);
@@ -125,7 +144,7 @@ public class Simulation {
 
     }
 
-    private void generateRequest(long timeStep) {
+    private Request generateRequest(long timeStep) {
         int x = (int)(Math.random()*MAP_WIDTH);
         int y = (int)(Math.random()*MAP_HEIGHT);
         User user = new User(userCount,x,y);
@@ -133,6 +152,8 @@ public class Simulation {
         userCount++;
         Edge nearestEdge = findNearestEdge(user.getRequest());
         nearestEdge.handleRequest(user.getRequest());
+        user.getRequest().setDelivered(true);
+        return user.getRequest();
     }
     private Edge findNearestEdge(Request request) {
         int distance;

@@ -10,6 +10,7 @@ public class Request {
     private int edgeId;
     private int pmId;
     private int vmId;
+    private boolean delivered;
     //TODO: add size of the request or something?
 
     public Request(int x, int y, long timestamp) {
@@ -17,6 +18,7 @@ public class Request {
         size = 5;
         this.timestamp = timestamp;
         duration = 10;
+        delivered = false;
     }
 
     public Location getLocation() {
@@ -81,6 +83,14 @@ public class Request {
 
     public void setVmId(int vmId) {
         this.vmId = vmId;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean deliver) {
+        this.delivered = deliver;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class Main extends JPanel {
             g2d.fillOval(SCALE-QUARTER_SCALE+edge.getLocation().getX()*SCALE, SCALE-QUARTER_SCALE+ edge.getLocation().getY()*SCALE, HALF_SCALE, HALF_SCALE);
         }
     }
-
+    //need input parameter time, modus
     public static void main(String[] args) throws InterruptedException {
         JFrame frame = new JFrame("Simulation");
         Main main = new Main();
