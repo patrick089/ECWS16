@@ -86,8 +86,8 @@ public class Simulation {
 
         }
 
-        //setObjectsforMigration();
-        //collectAndMigrateObjects();
+        setObjectsforMigration();
+        collectAndMigrateObjects();
 
         for (Edge edge : edges) {
             ArrayList<Request> removedRequests = edge.timeStep(currentTime);

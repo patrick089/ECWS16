@@ -211,11 +211,7 @@ running, U m is energy utilization of running PM m.
         migrationMap.putAll(helper);
         vm.setAlive(true);
         vm.setInMigrationProgress(false);
-
-
     }
-
-
 
     public void die(){
         isAlive = false;
