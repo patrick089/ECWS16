@@ -23,8 +23,8 @@ public class Simulation {
     public Simulation(long duration, ArrayList<Edge> edges, int modus) {
         this.duration = duration;
         currentTime = 0;
-        edges = new ArrayList<>();
-        edges.addAll(edges);
+        this.edges = new ArrayList<>();
+        this.edges.addAll(edges);
         requests = new ArrayList<>();
         users = new ArrayList<>();
         userCount = 1;
@@ -110,13 +110,13 @@ public class Simulation {
         for(Edge edge : edges){
             for(PM pm : edge.getPms()){
                 //SLA: ensure that there is enough time to migrate
-                if(pm.getCapacity() >  (Math.random()*pm.getSize() + 1) || pm.getCapacity() >  Math.round(pm.getSize()*0.75)){
+                if(/*pm.getCapacity() >  (Math.random()*pm.getSize() + 1) ||*/ pm.getCapacity() >=  Math.round(pm.getSize()*0.75)){
                     pm.setInMigrationProcess(true);
                 }
                 for(VM vm : pm.getVms()){
                     //SLA: ensure that there is enough time to migrate
-                    if(vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||
-                            vm.getMemory().countDirtyPages() > Math.round((vm.getMemory().getPages().size()*0.75))){
+                    if(/*vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||*/
+                            vm.getMemory().countDirtyPages() >= Math.round((vm.getMemory().getPages().size()*0.75))){
                         vm.setInMigrationProgress(true);
                     }
                 }

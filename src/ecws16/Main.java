@@ -14,7 +14,7 @@ public class Main extends JPanel {
     private Simulation simulation;
 
     public Main() {
-        controller = new Controller(50,1);
+        controller = new Controller(10,1);
         simulation = controller.getSimulation();
     }
 

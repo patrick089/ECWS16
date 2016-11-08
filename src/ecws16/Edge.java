@@ -118,23 +118,30 @@ running, U m is energy utilization of running PM m.
     public void checkIfAllVmsAreAlive(){
         ArrayList<VM> deadVMs = new ArrayList<>();
         for(PM pm : pms){
-            deadVMs = pm.checkIfAllVmsAreAlive();
+            ArrayList<VM> helper = new ArrayList<>();
+            helper = pm.checkIfAllVmsAreAlive();
+            deadVMs.addAll(helper);
         }
+        HashMap<VM,PM> copieMigrationMap = new HashMap<>();
+        copieMigrationMap.putAll(migrationMap);
         if(deadVMs.size() > 0){
             for(int i = 0; i < deadVMs.size(); i++) {
                 boolean firstmigration = true;
-                if (migrationMap.size() > 0) {
-                    for (VM vm : migrationMap.keySet()) {
+                if (copieMigrationMap.size() > 0) {
+                    for (VM vm : copieMigrationMap.keySet()) {
+                        //something is wrong with isAlive
                         if (vm.getId().getId() == deadVMs.get(i).getId().getId()) {
-                            if (vm.getMemory().countDirtyPages() > 3) {
+                            int difference =  deadVMs.get(i).getMemory().countDirtyPages() - vm.getMemory().countDirtyPages();
+                            System.out.println("DIFFERENCE: " + difference);
+                            if (difference > 2) {
                                 firstmigration = false;
                                 System.out.println("Secondmigration: " + vm.toString());
-                                doMigrationSecondStep(vm, deadVMs.get(i));
+                                doMigrationSecondStep(vm, deadVMs.get(i), copieMigrationMap);
                             } else {
                                 firstmigration = false;
                                 System.out.println("Thirdmigration: " + vm.toString());
-                                doMigrationThirdStep(vm, deadVMs.get(i));
-                                deadVMs.remove(i--);
+                                doMigrationThirdStep(vm, deadVMs.get(i), copieMigrationMap);
+                                //deadVMs.remove(i--);
                             }
                         }
                     }
@@ -155,62 +162,60 @@ running, U m is energy utilization of running PM m.
             if(freeSpace >= sizeOfVm){
                 ArrayList<VM> newVms = new ArrayList<>();
                 newVms.addAll(pm.getVms());
-                vm.setAlive(false);
-                vm.setInMigrationProgress(false);
-                newVms.add(vm);
+                VM newVM = new VM(vm);
+                newVM.setAlive(false);
+                newVM.setInMigrationProgress(false);
+                newVms.add(newVM);
                 pm.setVms(newVms);
-                migrationMap.put(vm,pm);
+                migrationMap.put(newVM,pm);
                 break;
             }
         }
     }
 
-    private void doMigrationSecondStep(VM vm, VM deadVm) {
+    private void doMigrationSecondStep(VM vm, VM deadVm, HashMap<VM,PM> copiedMigrationMap) {
 
+        HashMap<VM,PM> helper = new HashMap<>();
+        helper.putAll(copiedMigrationMap);
         VM newVm = new VM(vm);
         newVm.setMemory(new Memory(deadVm.getMemory()));
-        PM pm = migrationMap.get(vm);
+        PM pm = copiedMigrationMap.get(vm);
         pm.getVms().remove(vm);
         pm.getVms().add(newVm);
-        migrationMap.remove(vm);
-        migrationMap.put(newVm,pm);
+        helper.remove(vm);
+        helper.put(newVm,pm);
+        migrationMap.clear();
+        migrationMap.putAll(helper);
+
 
     }
 
-    private void doMigrationThirdStep(VM vm, VM deadVm) {
+    private void doMigrationThirdStep(VM vm, VM deadVm, HashMap<VM,PM> copiedMigrationMap) {
 
+        HashMap<VM,PM> helper = new HashMap<>();
+        helper.putAll(copiedMigrationMap);
+        helper.remove(vm);
         deadVm.die();
-        ArrayList<PM> samePMs = countSamePMs(deadVm);
-        if(samePMs.size() == 1){
-            samePMs.get(0).die();
+        int counter = 0;
+        for(VM vm1 : copiedMigrationMap.keySet()){
+            if(vm1.getId().getId() == deadVm.getId().getId()){
+                counter++;
+            }
         }
-        migrationMap.remove(vm);
+
+        if(counter > 1){
+            PM pm = copiedMigrationMap.get(vm);
+            pm.die();
+        }
+        migrationMap.clear();
+        migrationMap.putAll(helper);
         vm.setAlive(true);
         vm.setInMigrationProgress(false);
 
 
-
-        /*for(PM pm : pms){
-            for(int i = 0; i < pm.getVms().size(); i++){
-                if (deadVm.equals(pm.getVms().get(i))){
-                    pm.getVms().remove(i--);
-                    System.out.println("AFTER: PM with dead VM: " + pm.toString());
-                }
-            }
-
-        }*/
-
     }
 
-    private ArrayList<PM> countSamePMs(VM deadVm) {
-        ArrayList<PM> pms = new ArrayList<>();
-        for(Map.Entry<VM, PM> entry : migrationMap.entrySet()){
-            if(entry.getKey().getId().getId() == deadVm.getId().getId()){
-                pms.add(entry.getValue());
-            }
-        }
-        return pms;
-    }
+
 
     public void die(){
         isAlive = false;
