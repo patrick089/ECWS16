@@ -8,8 +8,8 @@ public class Main extends JPanel {
     private static final int SCALE = 40;
     private static final int QUARTER_SCALE = 10;
     private static final int HALF_SCALE = 20;
-    private static final int FRAME_HEIGHT = 800;
-    private static final int FRAME_WIDTH = 800;
+    private static final int FRAME_HEIGHT = 500;
+    private static final int FRAME_WIDTH = 500;
     private Controller controller;
     private Simulation simulation;
 

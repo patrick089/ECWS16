@@ -18,10 +18,9 @@ public class Controller {
         simulation = new Simulation(20,edges,modus);
     }
 
-    //to improve: location of edges
     private void generateEdges(int numberOfEdges) {
         for(int i = 0; i < numberOfEdges; i++){
-            edges.add(new Edge(i,i,5));
+            edges.add(new Edge(i,(2+i*7) % numberOfEdges,5));
         }
     }
 
