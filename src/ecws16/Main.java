@@ -9,7 +9,7 @@ public class Main extends JPanel {
     private static final int QUARTER_SCALE = 10;
     private static final int HALF_SCALE = 20;
     private static final int FRAME_HEIGHT = 500;
-    private static final int FRAME_WIDTH = 500;
+    private static final int FRAME_WIDTH = 600;
     private Controller controller;
     private Simulation simulation;
 
@@ -26,10 +26,10 @@ public class Main extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(Color.GRAY);
         for (int x = 0; x < simulation.getMapWidth(); x++) {
-            g2d.drawLine(SCALE+x*SCALE, 0, SCALE+x*SCALE, FRAME_HEIGHT);
+            g2d.drawLine(SCALE+x*SCALE, SCALE, SCALE+x*SCALE, SCALE*simulation.getMapWidth());
         }
         for (int y = 0; y < simulation.getMapHeight(); y++) {
-            g2d.drawLine(0,SCALE+ y*SCALE,FRAME_WIDTH,SCALE+ y*SCALE);
+            g2d.drawLine(SCALE,SCALE+ y*SCALE,SCALE*simulation.getMapHeight(),SCALE+ y*SCALE);
         }
         for (Edge edge : simulation.getEdges()) {
             g2d.setColor(Color.BLACK);
@@ -40,6 +40,8 @@ public class Main extends JPanel {
     public static void main(String[] args) throws InterruptedException {
         JFrame frame = new JFrame("Simulation");
         Main main = new Main();
+        JButton restartButton = new JButton("Restart Simulation");
+        main.add(restartButton);
         frame.add(main);
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
