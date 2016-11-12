@@ -9,7 +9,7 @@ public class User {
     private Location location;
     private Request request;
 
-    public User(int id, int x, int y){
+    public User(int id, double x, double y){
         this.id = id;
         this.location = new Location(x,y);
         request = new Request(x,y,10);

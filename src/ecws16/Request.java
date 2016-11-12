@@ -13,7 +13,7 @@ public class Request {
     private boolean delivered;
     //TODO: add size of the request or something?
 
-    public Request(int x, int y, long timestamp) {
+    public Request(double x, double y, long timestamp) {
         location = new Location(x,y);
         size = 5;
         this.timestamp = timestamp;

@@ -10,18 +10,34 @@ public class Controller {
     private int modus;
     private Simulation simulation;
 
-    public Controller(int numberOfEdges, int modus){
+    public Controller(int duration, int numberOfEdges, int modus){
         this.numberOfEdges = numberOfEdges;
         edges = new ArrayList<>();
         generateEdges(numberOfEdges);
         this.modus = modus;
-        simulation = new Simulation(100,edges,modus);
+        simulation = new Simulation(duration,edges,modus);
     }
 
     private void generateEdges(int numberOfEdges) {
-        for(int i = 0; i < numberOfEdges; i++){
-            edges.add(new Edge(i,(2+i*7) % numberOfEdges,5));
-        }
+        do {
+            generateEdge();
+        } while (edges.size() < numberOfEdges);
+    }
+
+    private void generateEdge() {
+        boolean foundLocation;
+        int x,y;
+        do {
+            foundLocation = true;
+            x = (int)Math.round(Math.random()*Simulation.MAP_WIDTH);
+            y = (int)Math.round(Math.random()*Simulation.MAP_HEIGHT);
+            for (int i = 0; i < i; i++) {
+                if (edges.get(i).getLocation().equals(new Location(x,y))) {
+                    foundLocation = false;
+                }
+            }
+        } while (!foundLocation);
+        edges.add(new Edge(x,y,5));
     }
 
     public Simulation getSimulation() {

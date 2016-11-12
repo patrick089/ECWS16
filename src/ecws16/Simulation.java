@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Simulation {
-    private static final int MAP_WIDTH = 10;
-    private static final int MAP_HEIGHT = 10;
+    public static final int MAP_WIDTH = 10;
+    public static final int MAP_HEIGHT = 10;
     private static final double REQUESTS_SIGMA = 2;
     private static final double REQUESTS_MY = 3;
     private static final double MIGRATION_SIGMA = 0.5;
@@ -145,12 +145,12 @@ public class Simulation {
 
         setObjectsforMigrationRandomThreeQuarter();
         collectAndMigrateObjects();
-        /*try {
+        try {
             setObjectsforMigrationRandomThreeQuarter();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        collectAndMigrateObjects();*/
+        collectAndMigrateObjects();
 
         for (Edge edge : edges) {
             ArrayList<Request> removedRequests = edge.timeStep(currentTime);
@@ -265,8 +265,8 @@ public class Simulation {
     }
 
     private Request generateRequest(long timeStep) {
-        int x = (int)(Math.random()*MAP_WIDTH);
-        int y = (int)(Math.random()*MAP_HEIGHT);
+        double x = (Math.random()*MAP_WIDTH);
+        double y = (Math.random()*MAP_HEIGHT);
         User user = new User(userCount,x,y);
         users.add(user);
         userCount++;
@@ -276,8 +276,8 @@ public class Simulation {
         return user.getRequest();
     }
     private Edge findNearestEdge(Request request) {
-        int distance;
-        int minDistance = Integer.MAX_VALUE;
+        double distance;
+        double minDistance = Double.POSITIVE_INFINITY;
         Edge edge = null;
         for(int i = 0; i < edges.size(); i++){
             distance = edges.get(i).getDistanceToRequest(request.getLocation());
@@ -319,5 +319,9 @@ public class Simulation {
 
     public static int getMapHeight() {
         return MAP_HEIGHT;
+    }
+
+    public int getModus() {
+        return modus;
     }
 }

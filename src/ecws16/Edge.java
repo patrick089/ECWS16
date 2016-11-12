@@ -48,12 +48,12 @@ running, U m is energy utilization of running PM m.
         inMigrationProcess = false;
     }
 
-    public int distanceTo(Edge edge) {
+    public double distanceTo(Edge edge) {
         return Math.abs(location.getX() - edge.getLocation().getX()) + Math.abs(location.getY() - edge.getLocation().getY());
     }
 
-    public int getDistanceToRequest(Location location){
-        return Math.abs(location.getX() - location.getX()) + Math.abs(location.getY() - location.getY());
+    public double getDistanceToRequest(Location location){
+        return Math.abs(this.location.getX() - location.getX()) + Math.abs(this.location.getY() - location.getY());
     }
 
     public double getEnergyUtilization() {
