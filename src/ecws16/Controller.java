@@ -15,7 +15,7 @@ public class Controller {
         edges = new ArrayList<>();
         generateEdges(numberOfEdges);
         this.modus = modus;
-        simulation = new Simulation(20,edges,modus);
+        simulation = new Simulation(100,edges,modus);
     }
 
     private void generateEdges(int numberOfEdges) {

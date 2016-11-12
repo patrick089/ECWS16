@@ -26,6 +26,12 @@ public class Memory {
 
     }
 
+    public void manageDirtyPagesForLastMigration(){
+        for(int i = 0; i < this.getPages().size()/2; i++){
+            this.getPages().get(i).setDirty(false);
+        }
+    }
+
     public int getNumberofPages() {
         return Math.round(size/5);
     }
@@ -34,13 +40,13 @@ public class Memory {
         int freeCapacity = 0;
 
         for(Page page : pages){
-            freeCapacity += page.isDirty() ? 0 : page.getSize();
+            freeCapacity += page.isDirty() == true ? 0 : page.getSize();
         }
 
         return freeCapacity;
     }
 
-    public void makePageDirty(Request request){
+    public void makePageDirty(){
 
         for (Page page : pages){
             if (page.isDirty() == false){
@@ -52,8 +58,7 @@ public class Memory {
     }
     public int countDirtyPages(){
         int count = 0;
-
-        for(Page page : pages){
+        for(Page page : this.getPages()){
             if(page.isDirty() == true){
                 count++;
             }

@@ -44,7 +44,7 @@ public class Main extends JPanel {
         g2d.drawString("t="+simulation.getCurrentTime(), 10 , y);
     }
     //need input parameter time, modus
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame("Simulation");
         Main main = new Main();
         JButton restartButton = new JButton("Restart Simulation");
