@@ -106,4 +106,8 @@ public class Request {
                 ", vmId=" + vmId +
                 '}';
     }
+
+    public boolean isFinished(long currentTime) {
+        return this.getTimestamp() < currentTime - this.getDuration();
+    }
 }

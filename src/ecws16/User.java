@@ -9,10 +9,10 @@ public class User {
     private Location location;
     private Request request;
 
-    public User(int id, double x, double y){
+    public User(int id, double x, double y, long timeStep){
         this.id = id;
         this.location = new Location(x,y);
-        request = new Request(x,y,10);
+        request = new Request(x,y,timeStep);
         request.setUserId(id);
     }
 

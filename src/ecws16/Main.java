@@ -157,7 +157,11 @@ public class Main extends JPanel {
 
         // Draw users
         for (User user : simulation.getUsers()) {
-            g2d.setColor(Color.BLUE);
+            if (user.getRequest().isFinished(simulation.getCurrentTime())) {
+                g2d.setColor(Color.GRAY);
+            } else {
+                g2d.setColor(Color.BLUE);
+            }
             g2d.fillOval(SCALE - EIGHTH_SCALE + (int)(user.getRequest().getLocation().getX() * SCALE), SCALE - EIGHTH_SCALE + (int)(user.getRequest().getLocation().getY() * SCALE), QUARTER_SCALE, QUARTER_SCALE);
         }
 
@@ -170,7 +174,7 @@ public class Main extends JPanel {
         // Draw information
         g2d.setColor(Color.BLACK);
         int y = SCALE * simulation.getMapHeight() + 2*SCALE;
-        g2d.drawString("RED=edges, BLUE=users, BLACK=connections", 10, y);
+        g2d.drawString("RED=edges, BLUE=active users, GRAY=inactive users, BLACK=connections", 10, y);
         y+= 20;
         g2d.drawString("Step " + simulation.getCurrentTime() + "/" + simulation.getDuration(), 10, y);
         g2d.drawString("modus=" + simulation.getModus(), 110, y);

@@ -43,10 +43,9 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
     }
 
     public ArrayList<Request> timeStep(long currentTime) {
-
         ArrayList<Request> removedRequests = new ArrayList<>();
         for(int i = 0; i < requests.size(); i++){
-            if(requests.get(i).getTimestamp() < currentTime - requests.get(i).getDuration()){
+            if(requests.get(i).isFinished(currentTime)){
                 //System.out.println("Removing Request: " + requests.get(i).toString());
                 Request request = requests.get(i);
                 requests.remove(i--);

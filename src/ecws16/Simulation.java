@@ -267,7 +267,7 @@ public class Simulation {
     private Request generateRequest(long timeStep) {
         double x = (Math.random()*MAP_WIDTH);
         double y = (Math.random()*MAP_HEIGHT);
-        User user = new User(userCount,x,y);
+        User user = new User(userCount,x,y, timeStep);
         users.add(user);
         userCount++;
         Edge nearestEdge = findNearestEdge(user.getRequest());
