@@ -14,6 +14,10 @@ public class Main extends JPanel {
     private Simulation simulation;
 
     public Main() {
+        initiateSimulation();
+    }
+
+    private void initiateSimulation() {
         controller = new Controller(10,1);
         simulation = controller.getSimulation();
     }
@@ -35,22 +39,30 @@ public class Main extends JPanel {
             g2d.setColor(Color.BLACK);
             g2d.fillOval(SCALE-QUARTER_SCALE+edge.getLocation().getX()*SCALE, SCALE-QUARTER_SCALE+ edge.getLocation().getY()*SCALE, HALF_SCALE, HALF_SCALE);
         }
+        g2d.setColor(Color.BLACK);
+        int y = SCALE*simulation.getMapWidth() + SCALE;
+        g2d.drawString("t="+simulation.getCurrentTime(), 10 , y);
     }
     //need input parameter time, modus
     public static void main(String[] args) throws InterruptedException {
         JFrame frame = new JFrame("Simulation");
         Main main = new Main();
         JButton restartButton = new JButton("Restart Simulation");
+        restartButton.addActionListener(e -> {
+            main.initiateSimulation();
+        });
         main.add(restartButton);
         frame.add(main);
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        while (!main.simulation.simulationIsOver()) {
-            main.simulation.simulateTimestep();
-            main.repaint();
-            Thread.sleep(10);
+        while (true) {
+            if (! main.simulation.simulationIsOver()) {
+                main.simulation.simulateTimestep();
+                main.repaint();
+            }
+            Thread.sleep(100);
         }
     }
 }
