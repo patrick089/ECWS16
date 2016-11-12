@@ -188,15 +188,8 @@ public class Simulation {
     }
 
     private void setObjectsforMigrationRandomThreeQuarter() throws Exception {
-        //go throw edges?
         for(Edge edge : edges){
-            //no migration for pm's and edges
-            //edge.setInMigrationProcess(true);
             for (PM pm : edge.getPms()) {
-                //SLA: ensure that there is enough time to migrate
-                //if (/*pm.getCapacity() >  (Math.random()*pm.getSize() + 1) ||*/ pm.getCapacity() >= Math.round(pm.getSize() * 0.75)) {
-                 //   pm.setInMigrationProcess(true);
-                //}
                 for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
                     if (/*vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||*/
@@ -221,7 +214,6 @@ public class Simulation {
 
     private void setObjectsforMigrationRandom() throws Exception {
         for(Edge edge : edges){
-            edge.setInMigrationProcess(true);
             for (PM pm : edge.getPms()) {
                 //SLA: ensure that there is enough time to migrate
                 //if (pm.getCapacity() >  (Math.random()*pm.getSize() + 1)) {
