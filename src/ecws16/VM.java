@@ -23,7 +23,7 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
     public VM(int size) {
         id = new ID();
         this.size = size;
-        memory = new Memory(50);
+        memory = new Memory(size);
         requests = new ArrayList<Request>();
         isAlive = true;
         inMigrationProgress = false;
@@ -60,7 +60,7 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
         request.setVmId(this.getId().getId());
         requests.add(request);
         //System.out.println("Adding Request: " + request.toString());
-        memory.makePageDirty(request);
+        memory.makePageDirty();
 
     }
 
@@ -72,9 +72,11 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
         this.memory = memory;
     }
 
-    public int getCapacity() {
+    public int getFreeCapacity() {
         return memory.freeCapacity();
     }
+
+    public int getCapacity(){ return size - memory.freeCapacity();}
 
     public boolean isAlive() {
         return isAlive;

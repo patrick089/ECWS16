@@ -24,13 +24,14 @@ resources at the highest possible workload, W i are workload rates.
     private static final double FAILURE_PROBABILITY = 0.001;
     private static final long restartDuration = 5;
 
+    private ID id;
     private ArrayList<VM> vms;
     private long timeLeftUntilRestarted;
     private boolean isStarted;
     private int size;
     private boolean isAlive;
     private boolean inMigrationProcess;
-    private ID id;
+
 
 
     public PM(int numberOfVms, int size) {
@@ -88,13 +89,13 @@ resources at the highest possible workload, W i are workload rates.
     public void handleRequest(Request request){
 
         request.setPmId(this.getId().getId());
-        int minWorkload =  Integer.MAX_VALUE;
-        int workload = 0;
+        int maxFreeCapacity =  Integer.MIN_VALUE;
+        int maxCapacity = 0;
         VM selectedVM = null;
         for(VM vm : vms){
-            workload = vm.getCapacity();
-            if (workload < minWorkload){
-                minWorkload = workload;
+            maxCapacity = vm.getFreeCapacity();
+            if (maxCapacity > maxFreeCapacity && vm.isAlive() == true){
+                maxFreeCapacity = maxCapacity;
                 selectedVM = vm;
             }
         }
@@ -107,15 +108,15 @@ resources at the highest possible workload, W i are workload rates.
     }
 
     public ArrayList<VM> checkIfAllVmsAreAlive(){
-        ArrayList<VM> deadVM = new ArrayList<>();
-        for(int i = 0; i < vms.size(); i++){
-            if(vms.get(i).isInMigrationProgress() == true){
-                deadVM.add(vms.get(i));
+        ArrayList<VM> migrationVM = new ArrayList<>();
+        for(int i = 0; i < this.getVms().size(); i++){
+            if(this.getVms().get(i).isInMigrationProgress() == true){
+                migrationVM.add(this.getVms().get(i));
                 //setSize(size - vms.get(i).getMemory().getSize());
                 //vms.remove(i--);
             }
         }
-        return deadVM;
+        return migrationVM;
     }
 
 
@@ -125,6 +126,14 @@ resources at the highest possible workload, W i are workload rates.
             capacity += vm.getCapacity();
         }
         return capacity;
+    }
+
+    public int getFreeCapacity(){
+        int freeCapacity = 0;
+        for(VM vm : vms){
+            freeCapacity += vm.getFreeCapacity();
+        }
+        return freeCapacity;
     }
 
 
@@ -187,13 +196,13 @@ resources at the highest possible workload, W i are workload rates.
     @Override
     public String toString() {
         return "PM{" +
-                "vms=" + vms +
+                "id=" + id +
+                ", vms=" + vms +
                 ", timeLeftUntilRestarted=" + timeLeftUntilRestarted +
                 ", isStarted=" + isStarted +
                 ", size=" + size +
                 ", isAlive=" + isAlive +
                 ", inMigrationProcess=" + inMigrationProcess +
-                ", id=" + id +
                 '}';
     }
 }

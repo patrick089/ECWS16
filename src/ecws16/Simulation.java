@@ -32,7 +32,7 @@ public class Simulation {
         this.modus = modus;
     }
 
-    public void run() {
+    public void run() throws Exception {
         for (currentTime = 0; !simulationIsOver();) {
             simulateTimestep();
         }
@@ -42,7 +42,7 @@ public class Simulation {
         return currentTime >= duration;
     }
 
-    public void simulateTimestep() {
+    public void simulateTimestep() throws Exception {
         currentTime++;
         generateRequests(currentTime);
         RetryStrategy retry = new RetryStrategy();
@@ -125,6 +125,8 @@ public class Simulation {
 
         }
 
+        setObjectsforMigrationRandomThreeQuarter();
+        collectAndMigrateObjects();
         /*try {
             setObjectsforMigrationRandomThreeQuarter();
         } catch (Exception e) {
@@ -168,24 +170,29 @@ public class Simulation {
     }
 
     private void setObjectsforMigrationRandomThreeQuarter() throws Exception {
+        //go throw edges?
         for(Edge edge : edges){
-            edge.setInMigrationProcess(true);
-                for (PM pm : edge.getPms()) {
+            //no migration for pm's and edges
+            //edge.setInMigrationProcess(true);
+            for (PM pm : edge.getPms()) {
+                //SLA: ensure that there is enough time to migrate
+                //if (/*pm.getCapacity() >  (Math.random()*pm.getSize() + 1) ||*/ pm.getCapacity() >= Math.round(pm.getSize() * 0.75)) {
+                 //   pm.setInMigrationProcess(true);
+                //}
+                for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
-                    if (/*pm.getCapacity() >  (Math.random()*pm.getSize() + 1) ||*/ pm.getCapacity() >= Math.round(pm.getSize() * 0.75)) {
-                        pm.setInMigrationProcess(true);
-                    }
-                    for (VM vm : pm.getVms()) {
-                        //SLA: ensure that there is enough time to migrate
-                        if (/*vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||*/
-                                vm.getMemory().countDirtyPages() >= Math.round((vm.getMemory().getPages().size() * 0.75))) {
+                    if (/*vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||*/
+                            vm.getMemory().countDirtyPages() >= Math.round((vm.getMemory().getPages().size() * 0.75))) {
+                        if (vm.isAlive() == true) {
                             vm.setInMigrationProgress(true);
                         }
                     }
                 }
+            }
         }
 
     }
+
 
     private void simulateMigrationRandom() throws Exception {
         int n = (int) Math.round(random.nextGaussian() * MIGRATION_SIGMA + MIGRATION_MY);
