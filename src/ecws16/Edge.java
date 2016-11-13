@@ -161,11 +161,14 @@ running, U m is energy utilization of running PM m.
 
     private VM getMigrationMapVm(int id, PM pm) {
         VM vm = null;
-        for(VM pmVm : pm.getVms()){
-            if(pmVm.getId().getId() == id && pmVm.isAlive() == false){
-                vm = pmVm;
-                break;
+        if (pm.isAlive() == true) {
+            for (VM pmVm : pm.getVms()) {
+                    if (pmVm.getId().getId() == id && pmVm.isAlive() == false) {
+                        vm = pmVm;
+                        break;
+                    }
             }
+
         }
         return vm;
     }

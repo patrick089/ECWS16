@@ -93,10 +93,12 @@ resources at the highest possible workload, W i are workload rates.
         int maxCapacity = 0;
         VM selectedVM = null;
         for(VM vm : vms){
-            maxCapacity = vm.getFreeCapacity();
-            if (maxCapacity > maxFreeCapacity && vm.isAlive() == true){
+            if (vm.isAlive() == true) {
+                maxCapacity = vm.getFreeCapacity();
+                if (maxCapacity > maxFreeCapacity /*&& vm.isAlive() == true*/){
                 maxFreeCapacity = maxCapacity;
                 selectedVM = vm;
+                }
             }
         }
         selectedVM.handleRequest(request);

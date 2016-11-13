@@ -143,14 +143,14 @@ public class Simulation {
 
         }
 
-        setObjectsforMigrationRandomThreeQuarter();
-        collectAndMigrateObjects();
-        try {
+        //setObjectsforMigrationRandomThreeQuarter();
+        //collectAndMigrateObjects();
+        /*try {
             setObjectsforMigrationRandomThreeQuarter();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        collectAndMigrateObjects();
+        }*/
+        //collectAndMigrateObjects();
 
         for (Edge edge : edges) {
             ArrayList<Request> removedRequests = edge.timeStep(currentTime);
