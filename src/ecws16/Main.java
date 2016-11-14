@@ -113,7 +113,9 @@ public class Main extends JPanel {
 
         // Initialize simulation
         int duration = new Integer(durationSlider.getValue());
-        controller = new Controller(duration, 3, modus);
+        //please change!
+        double failureProbability = 0.2;
+        controller = new Controller(duration, 10, modus, failureProbability);
         simulation = controller.getSimulation();
     }
 

@@ -84,22 +84,31 @@ running, U m is energy utilization of running PM m.
         return removedRequests;
     }
 
-    public void handleRequest(Request request){
+    public void handleRequest(Request request, int modus, double failureProbability){
 
         request.setEdgeId(this.getId().getId());
-        int maxFreeCapacity =  Integer.MIN_VALUE;
-        int freeCapacity = 0;
-        PM selectedPM = null;
-        for(PM pm : pms){
-            if(pm.isAlive() == true) {
-                freeCapacity = pm.getFreeCapacity();
-                if (freeCapacity > maxFreeCapacity) {
-                    maxFreeCapacity = freeCapacity;
-                    selectedPM = pm;
-                }
+        boolean failure = false;
+        if(modus == 3 || modus == 4){
+            failure = Math.random() < failureProbability;
+            if(failure == true){
+                request.setDelivered(false);
             }
         }
-        selectedPM.handleRequest(request);
+        if(failure == false) {
+            int maxFreeCapacity = Integer.MIN_VALUE;
+            int freeCapacity = 0;
+            PM selectedPM = null;
+            for (PM pm : pms) {
+                if (pm.isAlive() == true) {
+                    freeCapacity = pm.getFreeCapacity();
+                    if (freeCapacity > maxFreeCapacity) {
+                        maxFreeCapacity = freeCapacity;
+                        selectedPM = pm;
+                    }
+                }
+            }
+            selectedPM.handleRequest(request, modus, failureProbability);
+        }
     }
 
     public boolean hasFreeCapacity(Request request){
@@ -135,15 +144,21 @@ running, U m is energy utilization of running PM m.
                     for (Map.Entry<Integer, PM> entry : copieOfMigrationMap.entrySet()) {
                         if (entry.getKey() == migrationVm.getId().getId()) {
                             firstMigration = false;
-                            VM migrationMapVm = getMigrationMapVm(entry.getKey(), entry.getValue());
+                            VM migrationMapVm = null;
+                            try {
+                                migrationMapVm = getMigrationMapVm(entry.getKey(), entry.getValue());
+                            }catch (NullPointerException e){
+                                System.out.println("no free space in PM's");
+                                System.exit(1);
+                            }
                             int difference = migrationVm.getMemory().countDirtyPages() - migrationMapVm.getMemory().countDirtyPages();
-                            if (difference > 2) {
+                            if (difference >= 1) {
                                 vmig += difference * migrationMapVm.getMemory().getPages().get(0).getSize();
                                 System.out.println("second migration: " + migrationVm.toString());
-                                doSecondMigration(migrationVm, entry.getValue() /*, copieOfMigrationMap*/);
+                                doSecondMigration(migrationVm, entry.getValue());
                             } else {
                                 System.out.println("third migration: " + migrationVm.toString());
-                                doLastMigration(migrationVm, entry.getValue()/*, copieOfMigrationMap*/);
+                                doLastMigration(migrationVm, entry.getValue());
                             }
                         }
                     }

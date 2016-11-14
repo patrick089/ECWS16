@@ -19,8 +19,9 @@ public class Simulation {
     private int userCount;
     private Random random;
     private int modus;
+    private double failureProbability;
 
-    public Simulation(long duration, ArrayList<Edge> edges, int modus) {
+    public Simulation(long duration, ArrayList<Edge> edges, int modus, double failureProbability) {
         this.duration = duration;
         currentTime = 0;
         this.edges = new ArrayList<>();
@@ -30,6 +31,7 @@ public class Simulation {
         userCount = 1;
         random = new Random();
         this.modus = modus;
+        this.failureProbability = failureProbability;
     }
 
     public void run() throws Exception {
@@ -72,23 +74,29 @@ public class Simulation {
 
         //retry - migrate random
         }else if (modus == 3){
-
+            /*
+            if(request.isDeliverd() == false){
+                start retry
+            }
+            migration
+             */
             if (request.isDelivered() == false) {
                 while (retry.shouldRetry()) {
-                    try {
-                        simulateMigrationRandom();
-                        setObjectsforMigrationRandom();
-                        collectAndMigrateObjects();
-                    } catch (Exception e) {
-                        try {
-                            retry.errorOccured();
-                        } catch (RetryException e1) {
-                            e1.printStackTrace();
-                        }
 
+                    //request hernehmen sehen wo er gescheitert ist und versuchen nochmal zum zustellen
+                    //handlen, dass ob zustellung geglück ist oder nicht
+                    //wenn nicht dann siehe *
+                    if(request.isDelivered() == false){
+                        retry.errorOccured();
                     }
+
+
                 }
+                //* alle 5 versuche aufgebracht andere VM,PM oder edge suchen
             }
+             simulateMigrationRandom();
+             setObjectsforMigrationRandom();
+             collectAndMigrateObjects();
 
             //retry - migrate random + SLA
         }else if(modus == 4){
@@ -96,9 +104,7 @@ public class Simulation {
             if (request.isDelivered() == false) {
                 while (retry.shouldRetry()) {
                     try {
-                        simulateMigrationRandomThreeQuarter();
-                        setObjectsforMigrationRandomThreeQuarter();
-                        collectAndMigrateObjects();
+
                     } catch (Exception e) {
                         try {
                             retry.errorOccured();
@@ -109,7 +115,9 @@ public class Simulation {
                     }
                 }
             }
-
+             simulateMigrationRandomThreeQuarter();
+             setObjectsforMigrationRandomThreeQuarter();
+             collectAndMigrateObjects();
         }
 
         for (Edge edge : edges) {
@@ -152,7 +160,9 @@ public class Simulation {
             for (PM pm : edge.getPms()) {
                 for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
-                    if (vm.getMemory().countDirtyPages() >= Math.round((vm.getMemory().getPages().size() * 0.75))) {
+                    int i = (int) (Math.random()*vm.getMemory().getPages().size() + 1);
+                    //System.out.println("dirtyPages: " + vm.getMemory().countDirtyPages() +  ", " + i);
+                    if (vm.getMemory().countDirtyPages() >= i || vm.getMemory().countDirtyPages() > vm.getMemory().getPages().size() * 0.75) {
                         if (vm.isAlive() == true) {
                             vm.setInMigrationProgress(true);
                         }
@@ -176,7 +186,6 @@ public class Simulation {
                 for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
                     int i = (int) (Math.random()*vm.getMemory().getPages().size() + 1);
-                    System.out.println("dirtyPages: " + vm.getMemory().countDirtyPages() + ", randomDirtyPages: " + i);
                     if (vm.getMemory().countDirtyPages() > i) {
                         vm.setInMigrationProgress(true);
                     }
@@ -193,7 +202,7 @@ public class Simulation {
         users.add(user);
         userCount++;
         Edge nearestEdge = findNearestEdge(user.getRequest());
-        nearestEdge.handleRequest(user.getRequest());
+        nearestEdge.handleRequest(user.getRequest(), modus, failureProbability);
         user.getRequest().setDelivered(true);
         return user.getRequest();
     }

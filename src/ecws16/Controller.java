@@ -9,13 +9,15 @@ public class Controller {
     private ArrayList<Edge> edges;
     private int modus;
     private Simulation simulation;
+    private double failureProbability;
 
-    public Controller(int duration, int numberOfEdges, int modus){
+    public Controller(int duration, int numberOfEdges, int modus, double failureProbability){
         this.numberOfEdges = numberOfEdges;
         edges = new ArrayList<>();
         generateEdges(numberOfEdges);
         this.modus = modus;
-        simulation = new Simulation(duration,edges,modus);
+        this.failureProbability = failureProbability;
+        simulation = new Simulation(duration,edges,modus, failureProbability);
     }
 
     private void generateEdges(int numberOfEdges) {

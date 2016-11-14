@@ -55,11 +55,20 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
         return removedRequests;
     }
 
-    public void handleRequest(Request request){
+    public void handleRequest(Request request, int modus, double failureProbabilty){
         request.setVmId(this.getId().getId());
-        requests.add(request);
-        //System.out.println("Adding Request: " + request.toString());
-        memory.makePageDirty();
+        boolean failure = false;
+        if(modus == 3 || modus == 4){
+            failure = Math.random() < failureProbabilty;
+            if(failure == true){
+                request.setDelivered(false);
+            }
+        }
+        if (failure == false) {
+            requests.add(request);
+            //System.out.println("Adding Request: " + request.toString());
+            memory.makePageDirty();
+        }
 
     }
 

@@ -86,22 +86,31 @@ resources at the highest possible workload, W i are workload rates.
         return removedRequests;
     }
 
-    public void handleRequest(Request request){
+    public void handleRequest(Request request, int modus, double failureProbability){
 
         request.setPmId(this.getId().getId());
-        int maxFreeCapacity =  Integer.MIN_VALUE;
-        int maxCapacity = 0;
-        VM selectedVM = null;
-        for(VM vm : vms){
-            if (vm.isAlive() == true) {
-                maxCapacity = vm.getFreeCapacity();
-                if (maxCapacity > maxFreeCapacity /*&& vm.isAlive() == true*/){
-                maxFreeCapacity = maxCapacity;
-                selectedVM = vm;
-                }
+        boolean failure = false;
+        if(modus == 3 || modus == 4){
+            failure = Math.random() < failureProbability;
+            if(failure == true){
+                request.setDelivered(false);
             }
         }
-        selectedVM.handleRequest(request);
+        if(failure == false) {
+            int maxFreeCapacity = Integer.MIN_VALUE;
+            int maxCapacity = 0;
+            VM selectedVM = null;
+            for (VM vm : vms) {
+                if (vm.isAlive() == true) {
+                    maxCapacity = vm.getFreeCapacity();
+                    if (maxCapacity > maxFreeCapacity /*&& vm.isAlive() == true*/) {
+                        maxFreeCapacity = maxCapacity;
+                        selectedVM = vm;
+                    }
+                }
+            }
+            selectedVM.handleRequest(request, modus, failureProbability);
+        }
     }
 
     public void die(){
