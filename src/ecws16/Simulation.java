@@ -7,7 +7,7 @@ public class Simulation {
     public static final int MAP_WIDTH = 10;
     public static final int MAP_HEIGHT = 10;
     private static final double REQUESTS_SIGMA = 2;
-    private static final double REQUESTS_MY = 3;
+    public static final double REQUESTS_MY = 3;
     private static final double MIGRATION_SIGMA = 0.5;
     private static final double MIGRATION_MY = 0.5;
 

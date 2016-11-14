@@ -100,6 +100,10 @@ public class Main extends JPanel {
         buttonsPanel.add(usersLabel);
         JLabel usersSatisfiedLabel = new JLabel();
         buttonsPanel.add(usersSatisfiedLabel);
+        JLabel activeRequestsLabel = new JLabel();
+        buttonsPanel.add(activeRequestsLabel);
+        JLabel usersRateLabel = new JLabel();
+        buttonsPanel.add(usersRateLabel);
 
         buttonsPanel.add(Box.createVerticalStrut(30));
 
@@ -119,14 +123,19 @@ public class Main extends JPanel {
             timestepLabel.setText("Simulation Speed ("+ts+" ms interval)");
             durationLabel.setText("Duration ("+durationSlider.getValue()+" time steps):");
             failureLabel.setText("Failure Rate ("+failureSlider.getValue()*10+"%):");
-            usersLabel.setText("Users Total: "+ main.simulation.getUsers().size());
+            usersLabel.setText("Users (Requests) Total: "+ main.simulation.getUsers().size());
             int usersSatisfied = 0;
+            int pendingRequests = 0;
             for (User user : main.simulation.getUsers()) {
                 if (user.getRequest().isFinished(main.simulation.getCurrentTime())) {
                     usersSatisfied++;
+                } else {
+                    pendingRequests++;
                 }
             }
             usersSatisfiedLabel.setText("Users Satisfied: "+ usersSatisfied + " ("+Math.round(100.0*usersSatisfied/main.simulation.getUsers().size())+"%)");
+            activeRequestsLabel.setText("Pending Requests: "+ pendingRequests);
+            usersRateLabel.setText("Avg. Requests per Time Step: "+ main.simulation.REQUESTS_MY);
             Thread.sleep(ts);
         }
     }
