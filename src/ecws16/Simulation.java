@@ -48,19 +48,8 @@ public class Simulation {
         RetryStrategy retry = new RetryStrategy();
         Request request = generateRequest(currentTime);
 
-        //no retry - migrate everytime
-        if(modus == 1){
-
-            try {
-                simulateMigrationEveryTime();
-                setObjectsforMigrationEveryTime();
-                collectAndMigrateObjects();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //no retry - migrate random
-        }else if(modus == 2){
+       //no retry - migrate random
+         if(modus == 1){
 
             try {
                 simulateMigrationRandom();
@@ -71,7 +60,7 @@ public class Simulation {
             }
 
             //no retry - migrate random + SLA
-        }else if(modus == 3){
+        }else if(modus == 2){
 
             try {
                 simulateMigrationRandomThreeQuarter();
@@ -81,28 +70,8 @@ public class Simulation {
                 e.printStackTrace();
             }
 
-            //retry - migrate everytime
-        }else if(modus == 4){
-
-            if (request.isDelivered() == false) {
-                while (retry.shouldRetry()) {
-                    try {
-                        simulateMigrationEveryTime();
-                        setObjectsforMigrationEveryTime();
-                        collectAndMigrateObjects();
-                    } catch (Exception e) {
-                        try {
-                            retry.errorOccured();
-                        } catch (RetryException e1) {
-                            e1.printStackTrace();
-                        }
-
-                    }
-                }
-            }
-
         //retry - migrate random
-        }else if (modus == 5){
+        }else if (modus == 3){
 
             if (request.isDelivered() == false) {
                 while (retry.shouldRetry()) {
@@ -122,7 +91,7 @@ public class Simulation {
             }
 
             //retry - migrate random + SLA
-        }else if(modus == 6){
+        }else if(modus == 4){
 
             if (request.isDelivered() == false) {
                 while (retry.shouldRetry()) {
@@ -142,15 +111,6 @@ public class Simulation {
             }
 
         }
-
-        //setObjectsforMigrationRandomThreeQuarter();
-        //collectAndMigrateObjects();
-        /*try {
-            setObjectsforMigrationRandomThreeQuarter();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-        //collectAndMigrateObjects();
 
         for (Edge edge : edges) {
             ArrayList<Request> removedRequests = edge.timeStep(currentTime);
@@ -192,8 +152,7 @@ public class Simulation {
             for (PM pm : edge.getPms()) {
                 for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
-                    if (/*vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1) ||*/
-                            vm.getMemory().countDirtyPages() >= Math.round((vm.getMemory().getPages().size() * 0.75))) {
+                    if (vm.getMemory().countDirtyPages() >= Math.round((vm.getMemory().getPages().size() * 0.75))) {
                         if (vm.isAlive() == true) {
                             vm.setInMigrationProgress(true);
                         }
@@ -204,9 +163,8 @@ public class Simulation {
 
     }
 
-
     private void simulateMigrationRandom() throws Exception {
-        int n = (int) Math.round(random.nextGaussian() * MIGRATION_SIGMA + MIGRATION_MY);
+        int n = (int) Math.round(currentTime * MIGRATION_SIGMA + MIGRATION_MY);
         for (int i = 0; i < n; i++) {
             setObjectsforMigrationRandom();
         }
@@ -215,39 +173,11 @@ public class Simulation {
     private void setObjectsforMigrationRandom() throws Exception {
         for(Edge edge : edges){
             for (PM pm : edge.getPms()) {
-                //SLA: ensure that there is enough time to migrate
-                //if (pm.getCapacity() >  (Math.random()*pm.getSize() + 1)) {
-                  //  pm.setInMigrationProcess(true);
-                //}
                 for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
-                    //if (vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1)) {
-                        vm.setInMigrationProgress(true);
-                    //}
-                }
-            }
-        }
-
-    }
-
-    private void simulateMigrationEveryTime() throws Exception {
-        int n = (int) Math.round(currentTime * MIGRATION_SIGMA + MIGRATION_MY);
-        for (int i = 0; i < n; i++) {
-            setObjectsforMigrationEveryTime();
-        }
-    }
-
-    private void setObjectsforMigrationEveryTime() throws Exception {
-        for(Edge edge : edges){
-            edge.setInMigrationProcess(true);
-            for (PM pm : edge.getPms()) {
-                //SLA: ensure that there is enough time to migrate
-                if (pm.getCapacity() >  (Math.random()*pm.getSize() + 1)) {
-                    pm.setInMigrationProcess(true);
-                }
-                for (VM vm : pm.getVms()) {
-                    //SLA: ensure that there is enough time to migrate
-                    if (vm.getMemory().countDirtyPages() > (Math.random()*vm.getMemory().getPages().size() + 1)) {
+                    int i = (int) (Math.random()*vm.getMemory().getPages().size() + 1);
+                    System.out.println("dirtyPages: " + vm.getMemory().countDirtyPages() + ", randomDirtyPages: " + i);
+                    if (vm.getMemory().countDirtyPages() > i) {
                         vm.setInMigrationProgress(true);
                     }
                 }

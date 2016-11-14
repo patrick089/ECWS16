@@ -62,24 +62,18 @@ public class Main extends JPanel {
 
         buttonsPanel.add(Box.createVerticalStrut(30));
 
-        JRadioButton modus1 = new JRadioButton("1: no retry - mitigate everytime");
+        JRadioButton modus1 = new JRadioButton("1: no retry - migrate random");
         modusGroup.add(modus1);
         buttonsPanel.add(modus1);
-        JRadioButton modus2 = new JRadioButton("2: no retry - mitigate random");
+        JRadioButton modus2 = new JRadioButton("2: no retry - migrate random + SLA");
         modusGroup.add(modus2);
         buttonsPanel.add(modus2);
-        JRadioButton modus3 = new JRadioButton("3: no retry - mitigate random + SLA");
+        JRadioButton modus3 = new JRadioButton("3: retry - migrate random");
         modusGroup.add(modus3);
         buttonsPanel.add(modus3);
-        JRadioButton modus4 = new JRadioButton("4: retry - mitigate everytime");
+        JRadioButton modus4 = new JRadioButton("4: retry - migrate random + SLA");
         modusGroup.add(modus4);
         buttonsPanel.add(modus4);
-        JRadioButton modus5 = new JRadioButton("5: retry - mitigate random");
-        modusGroup.add(modus5);
-        buttonsPanel.add(modus5);
-        JRadioButton modus6 = new JRadioButton("6: retry - mitigate random + SLA");
-        modusGroup.add(modus6);
-        buttonsPanel.add(modus6);
         modus1.setSelected(true);
 
         buttonsPanel.add(Box.createVerticalStrut(30));
@@ -119,7 +113,7 @@ public class Main extends JPanel {
 
         // Initialize simulation
         int duration = new Integer(durationSlider.getValue());
-        controller = new Controller(duration, 10, modus);
+        controller = new Controller(duration, 3, modus);
         simulation = controller.getSimulation();
     }
 
