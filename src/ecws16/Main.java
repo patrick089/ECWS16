@@ -96,6 +96,13 @@ public class Main extends JPanel {
 
         buttonsPanel.add(Box.createVerticalStrut(30));
 
+        JLabel usersLabel = new JLabel();
+        buttonsPanel.add(usersLabel);
+        JLabel usersSatisfiedLabel = new JLabel();
+        buttonsPanel.add(usersSatisfiedLabel);
+
+        buttonsPanel.add(Box.createVerticalStrut(30));
+
         frame.setLayout(new BorderLayout());
         frame.add(main, BorderLayout.CENTER);
         frame.add(buttonsPanel, BorderLayout.EAST);
@@ -112,6 +119,14 @@ public class Main extends JPanel {
             timestepLabel.setText("Simulation Speed ("+ts+" ms interval)");
             durationLabel.setText("Duration ("+durationSlider.getValue()+" time steps):");
             failureLabel.setText("Failure Rate ("+failureSlider.getValue()*10+"%):");
+            usersLabel.setText("Users Total: "+ main.simulation.getUsers().size());
+            int usersSatisfied = 0;
+            for (User user : main.simulation.getUsers()) {
+                if (user.getRequest().isFinished(main.simulation.getCurrentTime())) {
+                    usersSatisfied++;
+                }
+            }
+            usersSatisfiedLabel.setText("Users Satisfied: "+ usersSatisfied + " ("+Math.round(100.0*usersSatisfied/main.simulation.getUsers().size())+"%)");
             Thread.sleep(ts);
         }
     }
