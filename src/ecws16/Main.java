@@ -14,6 +14,7 @@ public class Main extends JPanel {
     private static final int EIGHTH_SCALE = QUARTER_SCALE / 2;
     private static ButtonGroup modusGroup;
     private static JSlider durationSlider;
+    private static JSlider failureSlider;
     private Controller controller;
     private Simulation simulation;
 
@@ -32,6 +33,14 @@ public class Main extends JPanel {
         durationSlider.setPaintTicks(true);
         durationSlider.setPaintLabels(true);
 
+        JLabel failureLabel = new JLabel("Failure Rate (10%):");
+        failureSlider = new JSlider(JSlider.HORIZONTAL,
+                0, 10, 1);
+        failureSlider.setMajorTickSpacing(5);
+        failureSlider.setMinorTickSpacing(1);
+        failureSlider.setPaintTicks(true);
+        failureSlider.setPaintLabels(false);
+
         JFrame frame = new JFrame("Simulation");
         Main main = new Main();
         JButton restartButton = new JButton("Restart Simulation");
@@ -47,6 +56,11 @@ public class Main extends JPanel {
 
         buttonsPanel.add(durationLabel);
         buttonsPanel.add(durationSlider);
+
+        buttonsPanel.add(Box.createVerticalStrut(30));
+
+        buttonsPanel.add(failureLabel);
+        buttonsPanel.add(failureSlider);
 
         buttonsPanel.add(Box.createVerticalStrut(30));
 
@@ -97,6 +111,7 @@ public class Main extends JPanel {
             int ts = new Integer(timestepSlider.getValue());
             timestepLabel.setText("Simulation Speed ("+ts+" ms interval)");
             durationLabel.setText("Duration ("+durationSlider.getValue()+" time steps):");
+            failureLabel.setText("Failure Rate ("+failureSlider.getValue()*10+"%):");
             Thread.sleep(ts);
         }
     }
@@ -113,8 +128,7 @@ public class Main extends JPanel {
 
         // Initialize simulation
         int duration = new Integer(durationSlider.getValue());
-        //please change!
-        double failureProbability = 0.2;
+        double failureProbability = failureSlider.getValue()/10.0;
         controller = new Controller(duration, 10, modus, failureProbability);
         simulation = controller.getSimulation();
     }
