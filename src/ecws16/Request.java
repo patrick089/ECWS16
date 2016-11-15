@@ -18,7 +18,10 @@ public class Request {
         size = 5;
         this.timestamp = timestamp;
         duration = 10;
-        delivered = false;
+        delivered = true;
+        edgeId = 0;
+        pmId = 0;
+        vmId = 0;
     }
 
     public Location getLocation() {

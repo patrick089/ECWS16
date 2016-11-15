@@ -25,7 +25,6 @@ running, U m is energy utilization of running PM m.
      */
     private static final double U_0 = 1000;
     private static final int MAX_PMS = 10;
-    private static final double FAILURE_PROBABILITY = 0.0001;
 
 
     private ID id;
@@ -71,7 +70,7 @@ running, U m is energy utilization of running PM m.
         return location;
     }
 
-    public ArrayList<Request> timeStep(long t) {
+    /*public ArrayList<Request> timeStep(long t) {
         ArrayList<Request> removedRequests = new ArrayList<>();
         if (Math.random() < FAILURE_PROBABILITY) {
             for (PM pm : pms) {
@@ -82,7 +81,7 @@ running, U m is energy utilization of running PM m.
             removedRequests = pm.timeStep(t);
         }
         return removedRequests;
-    }
+    }*/
 
     public void handleRequest(Request request, int modus, double failureProbability){
 
@@ -92,6 +91,8 @@ running, U m is energy utilization of running PM m.
             failure = Math.random() < failureProbability;
             if(failure == true){
                 request.setDelivered(false);
+            }else {
+                request.setDelivered(true);
             }
         }
         if(failure == false) {

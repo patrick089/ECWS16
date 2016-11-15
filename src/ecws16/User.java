@@ -20,6 +20,10 @@ public class User {
         return request;
     }
 
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
     public int getId() {
         return id;
     }

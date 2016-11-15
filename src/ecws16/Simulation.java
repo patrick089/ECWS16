@@ -48,103 +48,146 @@ public class Simulation {
         currentTime++;
         generateRequests(currentTime);
         RetryStrategy retry = new RetryStrategy();
-        Request request = generateRequest(currentTime);
+        //Request request = generateRequest(currentTime);
 
-       //no retry - migrate random
-         if(modus == 1){
+        for(Request request : requests) {
+            //no retry - migrate random
+            if (modus == 1) {
 
-            try {
-                simulateMigrationRandom();
-                setObjectsforMigrationRandom();
-                collectAndMigrateObjects();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //no retry - migrate random + SLA
-        }else if(modus == 2){
-
-            try {
-                simulateMigrationRandomThreeQuarter();
-                setObjectsforMigrationRandomThreeQuarter();
-                collectAndMigrateObjects();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        //retry - migrate random
-        }else if (modus == 3){
-            /*
-            if(request.isDeliverd() == false){
-                start retry
-            }
-            migration
-             */
-            if (request.isDelivered() == false) {
-                while (retry.shouldRetry()) {
-
-                    //request hernehmen sehen wo er gescheitert ist und versuchen nochmal zum zustellen
-                    //handlen, dass ob zustellung geglück ist oder nicht
-                    //wenn nicht dann siehe *
-                    if(request.isDelivered() == false){
-                        retry.errorOccured();
-                    }
-
-
+                try {
+                    simulateMigrationRandom();
+                    setObjectsforMigrationRandom();
+                    collectAndMigrateObjects();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                //* alle 5 versuche aufgebracht andere VM,PM oder edge suchen
-            }
-             simulateMigrationRandom();
-             setObjectsforMigrationRandom();
-             collectAndMigrateObjects();
 
-            //retry - migrate random + SLA
-        }else if(modus == 4){
+                //no retry - migrate random + SLA
+            } else if (modus == 2) {
 
-            if (request.isDelivered() == false) {
-                while (retry.shouldRetry()) {
-                    try {
+                try {
+                    simulateMigrationRandomThreeQuarter();
+                    setObjectsforMigrationRandomThreeQuarter();
+                    collectAndMigrateObjects();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                    } catch (Exception e) {
-                        try {
+            } else if (modus == 3 || modus == 4) {
+                System.out.println("request check if it is delvierd: " + request.isDelivered());
+                Request newRequest = null;
+                if (request.isDelivered() == false) {
+                    boolean success = false;
+                    while (retry.shouldRetry()) {
+                        for (Edge edge : edges) {
+                            if (edge.getId().getId() == request.getEdgeId()) {
+                                if (request.getPmId() != 0) {
+                                    for (PM pm : edge.getPms()) {
+                                        if (pm.getId().getId() == request.getPmId()) {
+                                            if (request.getVmId() != 0) {
+                                                for (VM vm : pm.getVms()) {
+                                                    if (vm.getId().getId() == request.getVmId()) {
+                                                        System.out.println("request modus fails on VM");
+                                                        success = sendRequestAgainFailsOnVm(request, vm);
+                                                        break;
+                                                    }
+                                                }
+                                            } else {
+                                                System.out.println("request modus fails on PM");
+                                                success = sendRequestAgainFailsOnPm(request, pm);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    System.out.println("request modus fails on edge");
+                                    success = sendRequestAgainFailsOnEdge(request, edge);
+                                    break;
+                                }
+                            }
+                            if (success == true) {
+                                System.out.println("Success!!");
+                                break;
+                            }
+                        }
+
+                        if (request.isDelivered() == false) {
+                            System.out.println("no sucess!");
                             retry.errorOccured();
-                        } catch (RetryException e1) {
-                            e1.printStackTrace();
+                        }else {
+                            break;
                         }
 
                     }
-                }
-            }
-             simulateMigrationRandomThreeQuarter();
-             setObjectsforMigrationRandomThreeQuarter();
-             collectAndMigrateObjects();
-        }
+                    if (success == false) {
+                        System.out.println("No success 5 times.");
+                        newRequest = sendRequestAgain(currentTime, request);
+                        System.out.println("new request: " + newRequest.toString());
+                        request = newRequest;
+                    }
 
-        for (Edge edge : edges) {
-            ArrayList<Request> removedRequests = edge.timeStep(currentTime);
-            if(removedRequests.size() > 0){
-                finishRequests(removedRequests);
+                }
+                if(modus == 3){
+                    simulateMigrationRandom();
+                    setObjectsforMigrationRandom();
+                    collectAndMigrateObjects();
+
+                }else {
+                    simulateMigrationRandomThreeQuarter();
+                    setObjectsforMigrationRandomThreeQuarter();
+                    collectAndMigrateObjects();
+                }
+
             }
+        }
+        if(requests.size() > 0){
+            finishRequests();
         }
     }
 
-    private void finishRequests(ArrayList<Request> removedRequests) {
-        ArrayList<User> newUsers = new ArrayList<>();
-        newUsers.addAll(users);
-        for(int i = 0; i < removedRequests.size(); i++){
-            for(int j = 0; j < users.size(); j++){
-                if(removedRequests.get(i).getUserId() == users.get(j).getId()){
-                    newUsers.remove(j);
-                }
+    private boolean sendRequestAgainFailsOnVm(Request request, VM vm) {
+
+        vm.handleRequest(request,modus,failureProbability);
+        return checkIfRequestIsDeliverd(request);
+
+    }
+
+    private boolean sendRequestAgainFailsOnPm(Request request, PM pm) {
+
+        pm.handleRequest(request,modus,failureProbability);
+        return checkIfRequestIsDeliverd(request);
+
+    }
+
+    private boolean sendRequestAgainFailsOnEdge(Request request, Edge edge) {
+        edge.handleRequest(request,modus,failureProbability);
+        return checkIfRequestIsDeliverd(request);
+    }
+
+    private boolean checkIfRequestIsDeliverd(Request request){
+        if(request.isDelivered() == true){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void finishRequests() {
+        ArrayList<Request> newRequests = new ArrayList<>();
+        newRequests.addAll(requests);
+        for(int i = 0; i < requests.size(); i++){
+            if(requests.get(i).isDelivered() == true){
+                newRequests.remove(requests.get(i));
             }
         }
-        users = newUsers;
+        requests = newRequests;
     }
 
     private void generateRequests(long timeStep) {
         int n = (int) Math.round(random.nextGaussian() * REQUESTS_SIGMA + REQUESTS_MY);
         for (int i = 0; i < n; i++) {
-            generateRequest(timeStep);
+            Request request = generateRequest(timeStep);
+            requests.add(request);
         }
     }
 
@@ -161,7 +204,6 @@ public class Simulation {
                 for (VM vm : pm.getVms()) {
                     //SLA: ensure that there is enough time to migrate
                     int i = (int) (Math.random()*vm.getMemory().getPages().size() + 1);
-                    //System.out.println("dirtyPages: " + vm.getMemory().countDirtyPages() +  ", " + i);
                     if (vm.getMemory().countDirtyPages() >= i || vm.getMemory().countDirtyPages() > vm.getMemory().getPages().size() * 0.75) {
                         if (vm.isAlive() == true) {
                             vm.setInMigrationProgress(true);
@@ -203,7 +245,6 @@ public class Simulation {
         userCount++;
         Edge nearestEdge = findNearestEdge(user.getRequest());
         nearestEdge.handleRequest(user.getRequest(), modus, failureProbability);
-        user.getRequest().setDelivered(true);
         return user.getRequest();
     }
     private Edge findNearestEdge(Request request) {
@@ -211,11 +252,13 @@ public class Simulation {
         double minDistance = Double.POSITIVE_INFINITY;
         Edge edge = null;
         for(int i = 0; i < edges.size(); i++){
-            distance = edges.get(i).getDistanceToRequest(request.getLocation());
-            if(edges.get(i).hasFreeCapacity(request) == true) {
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    edge = edges.get(i);
+            if (edges.get(i).getId().getId() != request.getEdgeId()) {
+                distance = edges.get(i).getDistanceToRequest(request.getLocation());
+                if (edges.get(i).hasFreeCapacity(request) == true) {
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        edge = edges.get(i);
+                    }
                 }
             }
         }
@@ -226,6 +269,24 @@ public class Simulation {
         for(Edge edge : edges){
             edge.checkIfAllVmsAreAlive();
         }
+    }
+
+    private Request sendRequestAgain(long timestep, Request request){
+        User currentUser = null;
+        for(User user : users){
+            if(user.getId() == request.getUserId()){
+                currentUser = user;
+                break;
+            }
+        }
+        request.setEdgeId(0);
+        request.setPmId(0);
+        request.setVmId(0);
+        currentUser.setRequest(request);
+        Edge nearestEdge = findNearestEdge(currentUser.getRequest());
+        nearestEdge.handleRequest(currentUser.getRequest(), modus, failureProbability);
+        currentUser.getRequest().setDelivered(true);
+        return currentUser.getRequest();
     }
 
     public ArrayList<Edge> getEdges() {

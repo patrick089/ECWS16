@@ -62,6 +62,8 @@ the combination of the utilized memory, CPU and network bandwidth)– Running ti
             failure = Math.random() < failureProbabilty;
             if(failure == true){
                 request.setDelivered(false);
+            }else {
+                request.setDelivered(true);
             }
         }
         if (failure == false) {

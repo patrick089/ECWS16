@@ -94,6 +94,8 @@ resources at the highest possible workload, W i are workload rates.
             failure = Math.random() < failureProbability;
             if(failure == true){
                 request.setDelivered(false);
+            }else {
+                request.setDelivered(true);
             }
         }
         if(failure == false) {
