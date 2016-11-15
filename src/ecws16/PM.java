@@ -3,20 +3,6 @@ package ecws16;
 import java.util.ArrayList;
 
 public class PM {
-    /*
-    Size, consumed capacity, consumed CPU, consumed network bandwidth.
-– Energy signature:
-• linear combination of the CPU, capacity and network workload, but not
-equal to zero in the idle state. It depends on the consumed resources, e.g.
-the same workload of CPU and network will end up into different energy
-consumption rates on different machines.Energy utilization function of
-a machine is given as follows:
-U = U 0 + W cpu U cpu + W mem U mem + W network U network
-(1)
-where U is the total energy utilization, U 0 is the energy utilization in the idle
-state when no resources are consumed, U i is the energy utilizations considering
-resources at the highest possible workload, W i are workload rates.
-     */
     private static final double U_0 = 100;
     private static final double U_cpu = 100;
     private static final double U_mem = 100;

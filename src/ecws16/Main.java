@@ -104,6 +104,18 @@ public class Main extends JPanel {
         buttonsPanel.add(activeRequestsLabel);
         JLabel usersRateLabel = new JLabel();
         buttonsPanel.add(usersRateLabel);
+        JLabel energyLabel = new JLabel();
+        buttonsPanel.add(energyLabel);
+        JLabel failuresLabel = new JLabel();
+        buttonsPanel.add(failuresLabel);
+        JLabel latencyLabel = new JLabel();
+        buttonsPanel.add(latencyLabel);
+        JLabel vmigLabel = new JLabel();
+        buttonsPanel.add(vmigLabel);
+        JLabel dirtypagesLabel = new JLabel();
+        buttonsPanel.add(dirtypagesLabel);
+        JLabel memoryLabel = new JLabel();
+        buttonsPanel.add(memoryLabel);
 
         buttonsPanel.add(Box.createVerticalStrut(30));
 
@@ -136,6 +148,36 @@ public class Main extends JPanel {
             usersSatisfiedLabel.setText("Users Satisfied: "+ usersSatisfied + " ("+Math.round(100.0*usersSatisfied/main.simulation.getUsers().size())+"%)");
             activeRequestsLabel.setText("Pending Requests: "+ pendingRequests);
             usersRateLabel.setText("Avg. Requests per Time Step: "+ main.simulation.REQUESTS_MY);
+            int totalEnergyConsumption = 0;
+            int totalDistance = 0;
+            int distanceN = 0;
+            int totalVmig = 0;
+            int totalMemory = 0;
+            int totalDirtyPages = 0;
+            int totalFailures = 0;
+            for (Edge edge : main.simulation.getEdges()) {
+                totalEnergyConsumption += edge.getEnergyUtilization();
+                totalVmig += edge.getVmig();
+                for (PM pm : edge.getPms()) {
+                    for (VM vm : pm.getVms()) {
+                        for (Request request : vm.getRequests()) {
+                            totalDistance += request.getLocation().distanceTo(edge.getLocation());
+                            distanceN++;
+                            if (! request.isDelivered()) {
+                                totalFailures++;
+                            }
+                        }
+                        totalMemory += vm.getMemory().getSize();
+                        totalDirtyPages += vm.getMemory().countDirtyPages();
+                    }
+                }
+            }
+            energyLabel.setText("Total Energy Consumption: "+ totalEnergyConsumption);
+            failuresLabel.setText("Failures: "+ totalFailures);
+            latencyLabel.setText("Average Latency: " + Math.round(30.0*totalDistance/distanceN) + "ms");
+            vmigLabel.setText("Vmig: " + totalVmig);
+            dirtypagesLabel.setText("Dirty Pages: "+ totalDirtyPages);
+            memoryLabel.setText("Memory: " + totalMemory);
             Thread.sleep(ts);
         }
     }

@@ -5,24 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Edge {
-    /*
-    Includes max 10 pms, but number of running pms differs due to the work-
-load.
-– Location of the edge is known.
-– The edges are placed in a grid as shown in Figure 1. At most one edge can
-be placed at a position in the grid.
-– The distance between each two edges is defined as Manhattan distance be-
-tween the edges.
-– The edges are connected between each other. Network bandwidth is defined
-for each connection between two edges.
-U = U 0 +
-X
-U m
-(2)
-m∈P M
-– U is total energy utilization, U 0 is the energy utilization when no pms are
-running, U m is energy utilization of running PM m.
-     */
     private static final double U_0 = 1000;
     private static final int MAX_PMS = 10;
 
@@ -48,14 +30,6 @@ running, U m is energy utilization of running PM m.
         isAlive =true;
         inMigrationProcess = false;
         this.vmig = 0;
-    }
-
-    public double distanceTo(Edge edge) {
-        return Math.abs(location.getX() - edge.getLocation().getX()) + Math.abs(location.getY() - edge.getLocation().getY());
-    }
-
-    public double getDistanceToRequest(Location location){
-        return Math.abs(this.location.getX() - location.getX()) + Math.abs(this.location.getY() - location.getY());
     }
 
     public double getEnergyUtilization() {
@@ -282,4 +256,7 @@ running, U m is energy utilization of running PM m.
         return id;
     }
 
+    public long getVmig() {
+        return vmig;
+    }
 }

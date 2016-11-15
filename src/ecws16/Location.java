@@ -26,6 +26,10 @@ public class Location {
         this.x = x;
     }
 
+    public double distanceTo(Location location){
+        return Math.abs(this.getX() - location.getX()) + Math.abs(this.getY() - location.getY());
+    }
+
     @Override
     public String toString() {
         return "Location{" +

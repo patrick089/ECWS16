@@ -253,7 +253,7 @@ public class Simulation {
         Edge edge = null;
         for(int i = 0; i < edges.size(); i++){
             if (edges.get(i).getId().getId() != request.getEdgeId()) {
-                distance = edges.get(i).getDistanceToRequest(request.getLocation());
+                distance = edges.get(i).getLocation().distanceTo(request.getLocation());
                 if (edges.get(i).hasFreeCapacity(request) == true) {
                     if (distance < minDistance) {
                         minDistance = distance;
