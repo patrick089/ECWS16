@@ -173,7 +173,7 @@ public class Main extends JPanel {
                 }
             }
             energyLabel.setText("Total Energy Consumption: "+ totalEnergyConsumption);
-            failuresLabel.setText("Failures: "+ totalFailures);
+            //failuresLabel.setText("Failures: "+ totalFailures);
             latencyLabel.setText("Average Latency: " + Math.round(30.0*totalDistance/distanceN) + "ms");
             vmigLabel.setText("Vmig: " + totalVmig);
             dirtypagesLabel.setText("Dirty Pages: "+ totalDirtyPages);

@@ -32,9 +32,9 @@ public class RetryStrategy {
     public void errorOccured() throws RetryException{
         numberOfTriesLeft--;
 
-        if(!shouldRetry()) {
+        /*if(!shouldRetry()) {
             throw new RetryException(numberOfRetries +  " attempts to retry failed ");
-        }
+        }*/
     }
 
     /*public long getTimeToWait()
