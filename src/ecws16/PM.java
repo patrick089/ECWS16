@@ -145,18 +145,15 @@ public class PM {
     }
 
     public double getWorkloadCPU() {
-        // TODO
-        return 0;
+        return getCapacity()*0.1;
     }
 
     public double getWorkloadMem() {
-        // TODO
-        return 0;
+        return getCapacity()*0.12;
     }
 
     public double getWorkloadNetwork() {
-        // TODO
-        return 0;
+        return getCapacity()*0.23;
     }
 
     public ArrayList<VM> getVms() {
