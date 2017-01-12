@@ -111,8 +111,6 @@ public class PM {
         for(int i = 0; i < this.getVms().size(); i++){
             if(this.getVms().get(i).isInMigrationProgress() == true){
                 migrationVM.add(this.getVms().get(i));
-                //setSize(size - vms.get(i).getMemory().getSize());
-                //vms.remove(i--);
             }
         }
         return migrationVM;

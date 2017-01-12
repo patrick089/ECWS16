@@ -105,9 +105,16 @@ public class Edge {
     public void checkIfAllVmsAreAlive(){
         ArrayList<VM> migrationVms = new ArrayList<>();
         for(PM pm : this.getPms()){
-            ArrayList<VM> migrationVmsFromPM = new ArrayList<>();
-            migrationVmsFromPM = pm.checkIfAllVmsAreAlive();
-            migrationVms.addAll(migrationVmsFromPM);
+            //for cascading if a PM fails
+            if (pm.isAlive() == false) {
+                if (pm.isInMigrationProcess() == false) {
+                    pm.setInMigrationProcess(true);
+                }
+            } else {
+                ArrayList<VM> migrationVmsFromPM = new ArrayList<>();
+                migrationVmsFromPM = pm.checkIfAllVmsAreAlive();
+                migrationVms.addAll(migrationVmsFromPM);
+            }
         }
 
         if(migrationVms.size() > 0){
@@ -202,27 +209,46 @@ public class Edge {
 
         VM migrationMapVm = getMigrationMapVm(migrationVm.getId().getId(),migrationMapPm);
 
-        migrationMap.remove(migrationMapVm);
-        migrationMapPm.getVms().remove(migrationMapVm);
-        migrationMapVm.setMemory(migrationVm.getMemory());
-        migrationMapPm.getVms().add(migrationMapVm);
-        migrationMap.put(migrationMapVm.getId().getId(),migrationMapPm);
+        //if vm failes in second migration
+        boolean cascading = checkAliveVmForCascadingFailing(migrationMapVm);
 
+        if (cascading == false) {
+            migrationMap.remove(migrationMapVm);
+            migrationMapPm.getVms().remove(migrationMapVm);
+            migrationMapVm.setMemory(migrationVm.getMemory());
+            migrationMapPm.getVms().add(migrationMapVm);
+            migrationMap.put(migrationMapVm.getId().getId(), migrationMapPm);
+        }
+
+    }
+
+    private boolean checkAliveVmForCascadingFailing(VM migrationMapVm) {
+
+        boolean cascading = false;
+        if (migrationMapVm.isAlive() == false) {
+            if (migrationMapVm.isInMigrationProgress() == false) {
+                migrationMapVm.setInMigrationProgress(true);
+                cascading = true;
+            }
+        }
+        return cascading;
     }
 
     private void doLastMigration(VM migrationVm , PM migrationMapPm){
 
         migrationVm.die();
         VM migrationMapVm = getMigrationMapVm(migrationVm.getId().getId(), migrationMapPm);
-
+        //if vm failes in last migration
+        boolean cascading = checkAliveVmForCascadingFailing(migrationMapVm);
         migrationMap.remove(migrationMapVm.getId().getId());
-
-        migrationMapPm.getVms().remove(migrationMapVm);
-        migrationMapVm.getMemory().manageDirtyPagesForLastMigration();
-        migrationMapVm.setAlive(true);
-        migrationMapVm.setInMigrationProgress(false);
-        migrationMapPm.getVms().add(migrationMapVm);
-        System.out.println("Vmig: " + vmig);
+        if (cascading == false) {
+            migrationMapPm.getVms().remove(migrationMapVm);
+            migrationMapVm.getMemory().manageDirtyPagesForLastMigration();
+            migrationMapVm.setAlive(true);
+            migrationMapVm.setInMigrationProgress(false);
+            migrationMapPm.getVms().add(migrationMapVm);
+            System.out.println("Vmig: " + vmig);
+        }
 
     }
 
