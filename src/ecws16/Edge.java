@@ -108,7 +108,9 @@ public class Edge {
             //for cascading if a PM fails
             if (pm.isAlive() == false) {
                 if (pm.isInMigrationProcess() == false) {
-                    pm.setInMigrationProcess(true);
+                    if (pm.getCapacity() > 0) {
+                        pm.setInMigrationProcess(true);
+                    }
                 }
             } else {
                 ArrayList<VM> migrationVmsFromPM = new ArrayList<>();
@@ -209,46 +211,29 @@ public class Edge {
 
         VM migrationMapVm = getMigrationMapVm(migrationVm.getId().getId(),migrationMapPm);
 
-        //if vm failes in second migration
-        boolean cascading = checkAliveVmForCascadingFailing(migrationMapVm);
+        migrationMap.remove(migrationMapVm);
+        migrationMapPm.getVms().remove(migrationMapVm);
+        migrationMapVm.setMemory(migrationVm.getMemory());
+        migrationMapPm.getVms().add(migrationMapVm);
+        migrationMap.put(migrationMapVm.getId().getId(), migrationMapPm);
 
-        if (cascading == false) {
-            migrationMap.remove(migrationMapVm);
-            migrationMapPm.getVms().remove(migrationMapVm);
-            migrationMapVm.setMemory(migrationVm.getMemory());
-            migrationMapPm.getVms().add(migrationMapVm);
-            migrationMap.put(migrationMapVm.getId().getId(), migrationMapPm);
-        }
 
     }
 
-    private boolean checkAliveVmForCascadingFailing(VM migrationMapVm) {
 
-        boolean cascading = false;
-        if (migrationMapVm.isAlive() == false) {
-            if (migrationMapVm.isInMigrationProgress() == false) {
-                migrationMapVm.setInMigrationProgress(true);
-                cascading = true;
-            }
-        }
-        return cascading;
-    }
 
     private void doLastMigration(VM migrationVm , PM migrationMapPm){
 
         migrationVm.die();
         VM migrationMapVm = getMigrationMapVm(migrationVm.getId().getId(), migrationMapPm);
-        //if vm failes in last migration
-        boolean cascading = checkAliveVmForCascadingFailing(migrationMapVm);
         migrationMap.remove(migrationMapVm.getId().getId());
-        if (cascading == false) {
-            migrationMapPm.getVms().remove(migrationMapVm);
-            migrationMapVm.getMemory().manageDirtyPagesForLastMigration();
-            migrationMapVm.setAlive(true);
-            migrationMapVm.setInMigrationProgress(false);
-            migrationMapPm.getVms().add(migrationMapVm);
-            System.out.println("Vmig: " + vmig);
-        }
+        migrationMapPm.getVms().remove(migrationMapVm);
+        migrationMapVm.getMemory().manageDirtyPagesForLastMigration();
+        migrationMapVm.setAlive(true);
+        migrationMapVm.setInMigrationProgress(false);
+        migrationMapPm.getVms().add(migrationMapVm);
+        System.out.println("Vmig: " + vmig);
+
 
     }
 
