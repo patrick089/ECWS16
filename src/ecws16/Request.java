@@ -11,7 +11,6 @@ public class Request {
     private int pmId;
     private int vmId;
     private boolean delivered;
-    //TODO: add size of the request or something?
 
     public Request(double x, double y, long timestamp) {
         location = new Location(x,y);

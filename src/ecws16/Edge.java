@@ -24,7 +24,7 @@ public class Edge {
         location = new Location(x,y);
         this.pms = new ArrayList<>();
         for (int i = 0; i < Math.min(numberOfPMs, MAX_PMS); i++) {
-            this.pms.add(new PM(10,1250));
+            this.pms.add(new PM(1000,1250));
         }
         migrationMap = new HashMap<>();
         isAlive =true;
@@ -99,8 +99,6 @@ public class Edge {
 
         return free;
     }
-
-    //TODO:Migration
 
     public void checkIfAllVmsAreAlive(){
         ArrayList<VM> migrationVms = new ArrayList<>();

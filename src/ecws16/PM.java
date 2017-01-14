@@ -27,7 +27,7 @@ public class PM {
         this.size = size;
         isStarted = true;
         for (int i = 0; i < numberOfVms; i++){
-            vms.add(new VM(50));
+            vms.add(new VM(3000));
         }
         isAlive = true;
         inMigrationProcess = false;
