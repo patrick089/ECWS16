@@ -97,7 +97,11 @@ public class PM {
                     }
                 }
             }
-            selectedVM.handleRequest(request, modus, failureProbability);
+            try {
+                selectedVM.handleRequest(request, modus, failureProbability);
+            } catch (NullPointerException e) {
+                //catch
+            }
         }
     }
 
