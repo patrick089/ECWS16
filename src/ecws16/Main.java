@@ -8,7 +8,7 @@ public class Main extends JPanel {
 
     private static final int FRAME_HEIGHT = 768;
     private static final int FRAME_WIDTH = 1024;
-    private static final int SCALE = 8*7;
+    private static final int SCALE = (int)Math.round(8*7/5.0);
     private static final int HALF_SCALE = SCALE / 2;
     private static final int QUARTER_SCALE = HALF_SCALE / 2;
     private static final int EIGHTH_SCALE = QUARTER_SCALE / 2;
@@ -183,6 +183,7 @@ public class Main extends JPanel {
     }
 
     private void initiateSimulation() {
+        System.out.println("Initiating simulation...");
         // Detect modus
         int modus = 1;
         for (Enumeration<AbstractButton> buttons = modusGroup.getElements(); buttons.hasMoreElements();) {
@@ -195,8 +196,10 @@ public class Main extends JPanel {
         // Initialize simulation
         int duration = new Integer(durationSlider.getValue());
         double failureProbability = failureSlider.getValue()/10.0;
-        controller = new Controller(duration, 10, modus, failureProbability);
+        controller = new Controller(duration, 100, modus, failureProbability);
         simulation = controller.getSimulation();
+
+        System.out.println("Simulation initiated.");
     }
 
     @Override

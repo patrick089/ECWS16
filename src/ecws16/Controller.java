@@ -5,25 +5,21 @@ import java.util.ArrayList;
 
 public class Controller {
 
-    private int numberOfEdges;
     private ArrayList<Edge> edges;
-    private int modus;
     private Simulation simulation;
-    private double failureProbability;
 
     public Controller(int duration, int numberOfEdges, int modus, double failureProbability){
-        this.numberOfEdges = numberOfEdges;
         edges = new ArrayList<>();
         generateEdges(numberOfEdges);
-        this.modus = modus;
-        this.failureProbability = failureProbability;
         simulation = new Simulation(duration,edges,modus, failureProbability);
     }
 
     private void generateEdges(int numberOfEdges) {
+        System.out.println("Generating edges...");
         do {
             generateEdge();
         } while (edges.size() < numberOfEdges);
+        System.out.println("Edges generated.");
     }
 
     private void generateEdge() {
@@ -39,7 +35,7 @@ public class Controller {
                 }
             }
         } while (!foundLocation);
-        edges.add(new Edge(x,y,5));
+        edges.add(new Edge(x,y,10));
     }
 
     public Simulation getSimulation() {
