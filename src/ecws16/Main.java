@@ -8,7 +8,7 @@ public class Main extends JPanel {
 
     private static final int FRAME_HEIGHT = 768;
     private static final int FRAME_WIDTH = 1024;
-    private static final int SCALE = (int)Math.round(8*7/5.0);
+    private static final int SCALE = (int)Math.round(8*7/3.0);
     private static final int HALF_SCALE = SCALE / 2;
     private static final int QUARTER_SCALE = HALF_SCALE / 2;
     private static final int EIGHTH_SCALE = QUARTER_SCALE / 2;

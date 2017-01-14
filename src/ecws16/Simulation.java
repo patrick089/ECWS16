@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Simulation {
-    public static final int MAP_WIDTH = 50;
-    public static final int MAP_HEIGHT = 50;
+    public static final int MAP_WIDTH = 30;
+    public static final int MAP_HEIGHT = 30;
     public static final double REQUESTS_MY = 30;
     private static final double REQUESTS_SIGMA = REQUESTS_MY/2;
     private static final double MIGRATION_SIGMA = 0.5;
